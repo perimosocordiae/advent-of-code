@@ -1,11 +1,12 @@
 use chrono::NaiveDateTime;
+use chrono::Timelike;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
-use chrono::Timelike;
 use std::str::FromStr;
 
 pub fn run() {
@@ -14,49 +15,63 @@ pub fn run() {
     // println!("Part 2: {}", part2(&data));
 }
 
-fn setup() -> Vec<LogMessage> {
+fn setup() -> Vec<GuardHistory> {
     let f = File::open("inputs/04.txt").unwrap();
     let mut data: Vec<LogMessage> = BufReader::new(&f)
         .lines()
         .map(|l| l.unwrap().parse().unwrap())
         .collect();
     data.sort_unstable_by_key(|x| x.when);
-    data
-}
-
-fn part1(data: &Vec<LogMessage>) -> i32 {
-    let mut hours = HashMap::new();
-    let mut accum: &mut[i32] = hours.entry(data[0].guard).or_insert(vec![0i32; 60]);
+    let uniq_guards: HashSet<_> = data
+        .iter()
+        .filter(|m| m.event == EventType::START)
+        .map(|m| m.guard)
+        .collect();
+    let mut history: HashMap<_, _> = uniq_guards
+        .iter()
+        .map(|g| {
+            (
+                g,
+                GuardHistory {
+                    id: *g,
+                    minutes: [0i32; 60],
+                },
+            )
+        })
+        .collect();
+    let mut accum = history.get_mut(&data[0].guard).unwrap();
     let mut start_sleep: usize = 0;
-    for log in data.iter() {
+    for log in data {
         match log.event {
             EventType::START => {
-                accum = hours.entry(log.guard).or_insert(vec![0i32; 60]);
-            },
+                accum = history.get_mut(&log.guard).unwrap();
+            }
             EventType::SLEEP => {
                 start_sleep = log.when.time().minute() as usize;
-            },
+            }
             EventType::WAKE => {
                 let stop_sleep = log.when.time().minute() as usize;
                 for i in start_sleep..stop_sleep {
-                    accum[i] += 1;
+                    accum.minutes[i] += 1;
                 }
             }
         }
     }
-    let mut curr_guard: u16 = 0;
-    let mut max_slept: i32 = 0;
-    for (guard, grid) in hours.iter() {
-        let time_slept = grid.iter().sum();
-        if time_slept > max_slept {
-            curr_guard = *guard;
-            max_slept = time_slept;
-        }
-    }
-    let grid = &hours[&curr_guard];
-    let maxgrid = grid.iter().max().unwrap();
-    let argmax = grid.iter().position(|g| g == maxgrid).unwrap() as i32;
-    return curr_guard as i32 * argmax;
+    history.into_iter().map(|(_, v)| v).collect()
+}
+
+fn part1(data: &Vec<GuardHistory>) -> i32 {
+    let best = data
+        .iter()
+        .max_by_key(|&g| g.minutes.iter().sum::<i32>())
+        .unwrap();
+    let argmax = (0..60).max_by_key(|i| best.minutes[*i]).unwrap() as i32;
+    return best.id as i32 * argmax;
+}
+
+struct GuardHistory {
+    id: u16,
+    minutes: [i32; 60],
 }
 
 #[derive(Debug, PartialEq)]
@@ -109,7 +124,7 @@ impl FromStr for LogMessage {
             "wakes" => {
                 msg.event = EventType::WAKE;
             }
-            _ => return Err(ParseLogError{}.into()),
+            _ => return Err(ParseLogError {}.into()),
         }
         Ok(msg)
     }
