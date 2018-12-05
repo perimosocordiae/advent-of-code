@@ -1,7 +1,6 @@
 use chrono::NaiveDateTime;
 use chrono::Timelike;
 use std::collections::HashMap;
-use std::collections::HashSet;
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
@@ -22,29 +21,13 @@ fn setup() -> Vec<GuardHistory> {
         .map(|l| l.unwrap().parse().unwrap())
         .collect();
     data.sort_unstable_by_key(|x| x.when);
-    let uniq_guards: HashSet<_> = data
-        .iter()
-        .filter(|m| m.event == EventType::START)
-        .map(|m| m.guard)
-        .collect();
-    let mut history: HashMap<_, _> = uniq_guards
-        .iter()
-        .map(|g| {
-            (
-                g,
-                GuardHistory {
-                    id: *g,
-                    minutes: [0i32; 60],
-                },
-            )
-        })
-        .collect();
-    let mut accum = history.get_mut(&data[0].guard).unwrap();
+    let mut history = HashMap::new();
+    let mut accum = history.entry(data[0].guard).or_insert(GuardHistory::new(data[0].guard));
     let mut start_sleep: usize = 0;
     for log in data {
         match log.event {
             EventType::START => {
-                accum = history.get_mut(&log.guard).unwrap();
+                accum = history.entry(log.guard).or_insert(GuardHistory::new(log.guard));
             }
             EventType::SLEEP => {
                 start_sleep = log.when.time().minute() as usize;
@@ -65,13 +48,16 @@ fn part1(data: &Vec<GuardHistory>) -> i32 {
         .iter()
         .max_by_key(|&g| g.minutes.iter().sum::<i32>())
         .unwrap();
-    let argmax = (0..60).max_by_key(|i| best.minutes[*i]).unwrap() as i32;
-    best.id as i32 * argmax
+    solution_code(best)
 }
 
 fn part2(data: &Vec<GuardHistory>) -> i32 {
     let best = data.iter().max_by_key(|&g| g.minutes.iter().max()).unwrap();
-    best.id as i32 * argmax(&best.minutes) as i32
+    solution_code(best)
+}
+
+fn solution_code(gh: &GuardHistory) -> i32 {
+    gh.id as i32 * argmax(&gh.minutes) as i32
 }
 
 fn argmax<T: Ord>(values: &[T]) -> usize {
@@ -82,6 +68,15 @@ fn argmax<T: Ord>(values: &[T]) -> usize {
 struct GuardHistory {
     id: u16,
     minutes: [i32; 60],
+}
+
+impl GuardHistory {
+    fn new(id: u16) -> GuardHistory {
+        GuardHistory {
+            id: id,
+            minutes: [0i32; 60],
+        }
+    }
 }
 
 #[derive(Debug, PartialEq)]
