@@ -12,7 +12,7 @@ use std::str::FromStr;
 pub fn run() {
     let data = setup();
     println!("Part 1: {}", part1(&data));
-    // println!("Part 2: {}", part2(&data));
+    println!("Part 2: {}", part2(&data));
 }
 
 fn setup() -> Vec<GuardHistory> {
@@ -66,7 +66,17 @@ fn part1(data: &Vec<GuardHistory>) -> i32 {
         .max_by_key(|&g| g.minutes.iter().sum::<i32>())
         .unwrap();
     let argmax = (0..60).max_by_key(|i| best.minutes[*i]).unwrap() as i32;
-    return best.id as i32 * argmax;
+    best.id as i32 * argmax
+}
+
+fn part2(data: &Vec<GuardHistory>) -> i32 {
+    let best = data.iter().max_by_key(|&g| g.minutes.iter().max()).unwrap();
+    best.id as i32 * argmax(&best.minutes) as i32
+}
+
+fn argmax<T: Ord>(values: &[T]) -> usize {
+    let (idx, _) = values.iter().enumerate().max_by_key(|(_, x)| *x).unwrap();
+    idx
 }
 
 struct GuardHistory {
