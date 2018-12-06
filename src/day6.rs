@@ -9,7 +9,7 @@ use std::str::FromStr;
 pub fn run() {
     let data = setup();
     println!("Part 1: {}", part1(&data));
-    // println!("Part 2: {}", part2(&data));
+    println!("Part 2: {}", part2(&data));
 }
 
 fn setup() -> Vec<Point> {
@@ -74,6 +74,24 @@ fn part1(data: &Vec<Point>) -> i32 {
     }
     // Return the size of the largest internal region.
     *area_sizes.values().max().unwrap()
+}
+
+fn part2(data: &Vec<Point>) -> i32 {
+    let min_x = data.iter().map(|p| p.x).min().unwrap();
+    let min_y = data.iter().map(|p| p.y).min().unwrap();
+    let max_x = data.iter().map(|p| p.x).max().unwrap();
+    let max_y = data.iter().map(|p| p.y).max().unwrap();
+    let mut count: i32 = 0;
+    for x in min_x..=max_x {
+        for y in min_y..=max_y {
+            let pt = Point { x: x, y: y };
+            let sum_dist = data.iter().map(|p| l1_dist(&pt, p)).sum::<i32>();
+            if sum_dist < 10000 {
+                count += 1;
+            }
+        }
+    }
+    count
 }
 
 fn l1_dist(a: &Point, b: &Point) -> i32 {
