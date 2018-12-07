@@ -12,16 +12,23 @@ mod day6;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let day_num: u8;
-    if args.len() == 2 {
-        day_num = args[1].parse().unwrap_or_else(|err| {
-            println!("Parse error: {}", err);
-            process::exit(1);
-        });
-    } else {
+    if args.len() < 2 {
         println!("Usage: {} <day>", &args[0]);
         process::exit(1);
     }
+    args[1..]
+        .into_iter()
+        .map(|arg| {
+            arg.parse().unwrap_or_else(|err| {
+                println!("Bad argument '{}': {}", arg, err);
+                process::exit(1);
+            })
+        })
+        .for_each(run_day);
+}
+
+fn run_day(day_num: usize) {
+    println!(" ### Day {} ###", day_num);
     match day_num {
         1 => day1::run(),
         2 => day2::run(),
@@ -34,4 +41,5 @@ fn main() {
             process::exit(1);
         }
     }
+    println!("");
 }
