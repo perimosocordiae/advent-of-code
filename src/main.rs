@@ -1,5 +1,5 @@
-extern crate ndarray;
 extern crate chrono;
+extern crate ndarray;
 use std::env;
 use std::process;
 
@@ -14,24 +14,24 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let day_num: u8;
     if args.len() == 2 {
-      day_num = args[1].parse().unwrap_or_else(|err|{
-        println!("Parse error: {}", err);
-        process::exit(1);
-      });
+        day_num = args[1].parse().unwrap_or_else(|err| {
+            println!("Parse error: {}", err);
+            process::exit(1);
+        });
     } else {
-      println!("Usage: {} <day>", &args[0]);
-      process::exit(1);
+        println!("Usage: {} <day>", &args[0]);
+        process::exit(1);
     }
     match day_num {
-      1 => day1::run(),
-      2 => day2::run(),
-      3 => day3::run(),
-      4 => day4::run(),
-      5 => day5::run(),
-      6 => day6::run(),
-      _ => {
-        println!("Invalid day: {}", day_num);
-        process::exit(1);
-      }
+        1 => day1::run(),
+        2 => day2::run(),
+        3 => day3::run(),
+        4 => day4::run(),
+        5 => day5::run(),
+        6 => day6::run(),
+        _ => {
+            println!("Invalid day: {}", day_num);
+            process::exit(1);
+        }
     }
 }

@@ -20,7 +20,7 @@ fn setup() -> Vec<Point> {
         .collect()
 }
 
-fn part1(data: &Vec<Point>) -> i32 {
+fn part1(data: &[Point]) -> i32 {
     let min_x = data.iter().map(|p| p.x).min().unwrap();
     let min_y = data.iter().map(|p| p.y).min().unwrap();
     let max_x = data.iter().map(|p| p.x).max().unwrap();
@@ -76,7 +76,7 @@ fn part1(data: &Vec<Point>) -> i32 {
     *area_sizes.values().max().unwrap()
 }
 
-fn part2(data: &Vec<Point>) -> i32 {
+fn part2(data: &[Point]) -> i32 {
     let min_x = data.iter().map(|p| p.x).min().unwrap();
     let min_y = data.iter().map(|p| p.y).min().unwrap();
     let max_x = data.iter().map(|p| p.x).max().unwrap();
@@ -84,7 +84,7 @@ fn part2(data: &Vec<Point>) -> i32 {
     let mut count: i32 = 0;
     for x in min_x..=max_x {
         for y in min_y..=max_y {
-            let pt = Point { x: x, y: y };
+            let pt = Point { x, y };
             let sum_dist = data.iter().map(|p| l1_dist(&pt, p)).sum::<i32>();
             if sum_dist < 10000 {
                 count += 1;

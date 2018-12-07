@@ -15,7 +15,7 @@ fn setup() -> Vec<String> {
     BufReader::new(&f).lines().map(|l| l.unwrap()).collect()
 }
 
-fn part1(data: &Vec<String>) -> i32 {
+fn part1(data: &[String]) -> i32 {
     let mut num_doubles: i32 = 0;
     let mut num_triples: i32 = 0;
     for id in data {
@@ -24,7 +24,7 @@ fn part1(data: &Vec<String>) -> i32 {
             let count = counts.entry(*c).or_insert(0);
             *count += 1;
         }
-        let uniq_counts: HashSet<i32> = counts.values().map(|c| c.clone()).collect();
+        let uniq_counts: HashSet<i32> = counts.values().cloned().collect();
         for count in uniq_counts {
             if count == 2 {
                 num_doubles += 1;
@@ -36,7 +36,7 @@ fn part1(data: &Vec<String>) -> i32 {
     num_doubles * num_triples
 }
 
-fn part2(data: &Vec<String>) -> String {
+fn part2(data: &[String]) -> String {
     let n = data.len();
     let m = data[0].len();
     for (idx, a) in data[..n - 1].iter().enumerate() {
@@ -46,7 +46,7 @@ fn part2(data: &Vec<String>) -> String {
                 .iter()
                 .zip(b.as_bytes())
                 .filter(|(x, y)| x == y)
-                .map(|(x, _)| x.clone())
+                .map(|(x, _)| *x)
                 .collect::<Vec<u8>>();
             if shared_chars.len() == m - 1 {
                 return String::from_utf8(shared_chars).unwrap();

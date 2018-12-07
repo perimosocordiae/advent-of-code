@@ -17,11 +17,11 @@ fn setup() -> Vec<i32> {
         .collect()
 }
 
-fn part1(data: &Vec<i32>) -> i32 {
+fn part1(data: &[i32]) -> i32 {
     data.iter().sum()
 }
 
-fn part2(data: &Vec<i32>) -> i32 {
+fn part2(data: &[i32]) -> i32 {
     let mut seen = HashMap::new();
     let mut sum: i32 = 0;
     // TODO: Use an infinite range here?

@@ -48,7 +48,7 @@ fn react_one_pass(data: &[PolymerUnit]) -> Vec<PolymerUnit> {
     let mut i: usize = 0;
     let mut j: usize = 1;
     while i < n && j < n {
-        if data[i].reacts_with(&data[j]) {
+        if data[i].reacts_with(data[j]) {
             i += 2;
             j += 2;
         } else {
@@ -74,10 +74,10 @@ impl PolymerUnit {
         let polarity = c < 97;
         PolymerUnit {
             id: if polarity { c - 65 } else { c - 97 },
-            polarity: polarity,
+            polarity,
         }
     }
-    fn reacts_with(&self, other: &PolymerUnit) -> bool {
+    fn reacts_with(self, other: PolymerUnit) -> bool {
         self.id == other.id && self.polarity != other.polarity
     }
 }

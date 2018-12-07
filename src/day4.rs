@@ -22,12 +22,16 @@ fn setup() -> Vec<GuardHistory> {
         .collect();
     data.sort_unstable_by_key(|x| x.when);
     let mut history = HashMap::new();
-    let mut accum = history.entry(data[0].guard).or_insert(GuardHistory::new(data[0].guard));
+    let mut accum = history
+        .entry(data[0].guard)
+        .or_insert_with(|| GuardHistory::new(data[0].guard));
     let mut start_sleep: usize = 0;
     for log in data {
         match log.event {
             EventType::START => {
-                accum = history.entry(log.guard).or_insert(GuardHistory::new(log.guard));
+                accum = history
+                    .entry(log.guard)
+                    .or_insert_with(|| GuardHistory::new(log.guard));
             }
             EventType::SLEEP => {
                 start_sleep = log.when.time().minute() as usize;
@@ -43,7 +47,7 @@ fn setup() -> Vec<GuardHistory> {
     history.into_iter().map(|(_, v)| v).collect()
 }
 
-fn part1(data: &Vec<GuardHistory>) -> i32 {
+fn part1(data: &[GuardHistory]) -> i32 {
     let best = data
         .iter()
         .max_by_key(|&g| g.minutes.iter().sum::<i32>())
@@ -51,13 +55,13 @@ fn part1(data: &Vec<GuardHistory>) -> i32 {
     solution_code(best)
 }
 
-fn part2(data: &Vec<GuardHistory>) -> i32 {
+fn part2(data: &[GuardHistory]) -> i32 {
     let best = data.iter().max_by_key(|&g| g.minutes.iter().max()).unwrap();
     solution_code(best)
 }
 
 fn solution_code(gh: &GuardHistory) -> i32 {
-    gh.id as i32 * argmax(&gh.minutes) as i32
+    i32::from(gh.id) * argmax(&gh.minutes) as i32
 }
 
 fn argmax<T: Ord>(values: &[T]) -> usize {
@@ -73,7 +77,7 @@ struct GuardHistory {
 impl GuardHistory {
     fn new(id: u16) -> GuardHistory {
         GuardHistory {
-            id: id,
+            id,
             minutes: [0i32; 60],
         }
     }

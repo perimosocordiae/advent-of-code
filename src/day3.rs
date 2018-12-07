@@ -46,7 +46,7 @@ fn setup() -> Vec<Rectangle> {
         .collect()
 }
 
-fn find_bbox(data: &Vec<Rectangle>) -> (usize, usize) {
+fn find_bbox(data: &[Rectangle]) -> (usize, usize) {
     let mut num_rows = 1;
     let mut num_cols = 1;
     for rect in data.iter() {
@@ -56,7 +56,7 @@ fn find_bbox(data: &Vec<Rectangle>) -> (usize, usize) {
     (num_rows, num_cols)
 }
 
-fn part1(data: &Vec<Rectangle>) -> i32 {
+fn part1(data: &[Rectangle]) -> i32 {
     let (num_rows, num_cols) = find_bbox(&data);
     // Count each square's overlaps separately.
     let mut grid: Vec<u16> = vec![0; num_cols * num_rows];
@@ -72,7 +72,7 @@ fn part1(data: &Vec<Rectangle>) -> i32 {
     grid.into_iter().filter(|&c| c > 1).map(|_| 1).sum()
 }
 
-fn part2(data: &Vec<Rectangle>) -> u16 {
+fn part2(data: &[Rectangle]) -> u16 {
     let (num_rows, num_cols) = find_bbox(&data);
     let mut grid: Vec<u16> = vec![0; num_cols * num_rows];
     let index = |r, c| r * num_cols + c;
@@ -84,7 +84,7 @@ fn part2(data: &Vec<Rectangle>) -> u16 {
                 let idx: usize = index(r, c);
                 if grid[idx] != 0 {
                     overlaps.insert(grid[idx]);
-                    overlaps.insert(rect.id.clone());
+                    overlaps.insert(rect.id);
                 }
                 grid[idx] = rect.id;
             }
