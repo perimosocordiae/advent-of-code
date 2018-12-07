@@ -17,7 +17,7 @@ fn main() {
         process::exit(1);
     }
     args[1..]
-        .into_iter()
+        .iter()
         .map(|arg| {
             arg.parse().unwrap_or_else(|err| {
                 println!("Bad argument '{}': {}", arg, err);
@@ -41,5 +41,5 @@ fn run_day(day_num: usize) {
             process::exit(1);
         }
     }
-    println!("");
+    println!();
 }
