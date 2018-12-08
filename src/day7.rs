@@ -1,5 +1,5 @@
 use petgraph::prelude::*;
-use petgraph::visit::{Dfs, IntoNodeIdentifiers, VisitMap, Visitable};
+use petgraph::visit::IntoNodeIdentifiers;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
@@ -7,7 +7,7 @@ use std::io::BufReader;
 pub fn run() {
     let data = setup();
     println!("Part 1: {}", part1(&data));
-    // println!("Part 2: {}", part2(&data));
+    println!("Part 2: {}", part2(&data));
 }
 
 fn setup() -> DiGraphMap<char, ()> {
@@ -29,44 +29,34 @@ fn first_char(s: &str) -> char {
     s.chars().next().unwrap()
 }
 
-fn part1(g: &DiGraphMap<char, ()>) -> String {
-    // let mut order = Vec::<char>::new();
-    // while let Some(nx) = dfs.next(&data) {
-    //     order.push(nx);
-    //     dfs.stack.sort_unstable_by(|a, b| b.cmp(a));
-    //     println!("{:?} {:?}", order, dfs.stack);
-    // }
-    // order.into_iter().collect()
-    let mut dfs = Dfs::empty(&g);
-    let mut finished = g.visit_map();
-    let mut finish_stack = Vec::new();
-    let mut nodes: Vec<char> = g.node_identifiers().collect();
-    nodes.sort_unstable_by(|a, b| b.cmp(a));
-    for i in nodes {
-        if dfs.discovered.is_visited(&i) {
-            continue;
-        }
-        dfs.stack.push(i);
-        while let Some(&nx) = dfs.stack.last() {
-            if dfs.discovered.visit(nx) {
-                // First time visiting `nx`: Push neighbors, don't pop `nx`
-                for succ in g.neighbors(nx) {
-                    if !dfs.discovered.is_visited(&succ) {
-                        dfs.stack.push(succ);
-                    }
-                }
-            } else {
-                dfs.stack.pop();
-                if finished.visit(nx) {
-                    // Second time: All reachable nodes must have been finished
-                    finish_stack.push(nx);
-                }
+fn part1(graph: &DiGraphMap<char, ()>) -> String {
+    let mut nodes: Vec<char> = graph.node_identifiers().collect();
+    nodes.sort_unstable();
+    let mut g = graph.clone();
+    let mut order = Vec::new();
+    while !nodes.is_empty() {
+        for i in nodes.into_iter() {
+            if g.neighbors_directed(i, Direction::Incoming)
+                .next()
+                .is_none()
+            {
+                order.push(i);
+                g.remove_node(i);
+                break;
             }
         }
+        nodes = g.node_identifiers().collect();
+        nodes.sort_unstable();
     }
-    finish_stack.into_iter().rev().collect()
+    order.into_iter().collect()
 }
 
-// fn part2(data: &DiGraphMap<(), ()>) -> i32 {
-//     0
-// }
+fn part2(data: &DiGraphMap<char, ()>) -> i32 {
+    let mut elapsed: i32 = 0;
+    elapsed
+}
+
+fn cost(node: char) -> i32 {
+    let c = node.to_ascii_uppercase() as u8 - 97;
+    i32::from(c)
+}
