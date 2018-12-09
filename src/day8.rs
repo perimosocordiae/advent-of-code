@@ -20,7 +20,7 @@ fn part1(root: &Node) -> usize {
     root.sum_metadata()
 }
 
-fn part2(root: &Node) -> usize {
+fn part2(root: &Node) -> i32 {
     root.value()
 }
 
@@ -35,26 +35,29 @@ impl<'a> Node<'a> {
         let num_children = data[0];
         let num_metadata = data[1];
         let mut tail = &data[2..];
-        let mut children: Vec<Node> = vec![];
-        for _ in 0..num_children {
-            let (child, new_tail) = Node::parse(tail);
-            children.push(child);
-            tail = new_tail;
-        }
+        let children: Vec<Node> = (0..num_children)
+            .map(|_| {
+                let (child, new_tail) = Node::parse(tail);
+                tail = new_tail;
+                child
+            })
+            .collect();
         let node = Node {
             children,
             metadata: &tail[..num_metadata],
         };
         (node, &tail[num_metadata..])
     }
-    fn sum_metadata(&self) -> usize {
-        let m: usize = self.metadata.iter().sum();
-        let n: usize = self.children.iter().map(|c| c.sum_metadata()).sum();
-        m + n
+    fn sum_my_metadata(&self) -> usize {
+        self.metadata.iter().sum()
     }
-    fn value(&self) -> usize {
+    fn sum_metadata(&self) -> usize {
+        let n: usize = self.children.iter().map(|c| c.sum_metadata()).sum();
+        self.sum_my_metadata() + n
+    }
+    fn value(&self) -> i32 {
         if self.children.is_empty() {
-            return self.metadata.iter().sum();
+            return self.sum_my_metadata() as i32;
         }
         let num_children = self.children.len();
         let mut memo = vec![-1i32; num_children];
@@ -64,9 +67,9 @@ impl<'a> Node<'a> {
             .map(|m| m - 1)
             .map(|idx| {
                 if memo[idx] < 0 {
-                    memo[idx] = self.children[idx].value() as i32;
+                    memo[idx] = self.children[idx].value();
                 }
-                memo[idx] as usize
+                memo[idx]
             })
             .sum()
     }
