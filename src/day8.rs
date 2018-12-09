@@ -2,8 +2,10 @@ use std::fs;
 
 pub fn run() {
     let data = setup();
-    println!("Part 1: {}", part1(&data));
-    println!("Part 2: {}", part2(&data));
+    let (root, tail) = Node::parse(&data);
+    assert!(tail.is_empty());
+    println!("Part 1: {}", part1(&root));
+    println!("Part 2: {}", part2(&root));
 }
 
 fn setup() -> Vec<usize> {
@@ -14,15 +16,11 @@ fn setup() -> Vec<usize> {
         .collect()
 }
 
-fn part1(data: &[usize]) -> usize {
-    let (root, tail) = Node::parse(&data);
-    assert!(tail.is_empty());
+fn part1(root: &Node) -> usize {
     root.sum_metadata()
 }
 
-fn part2(data: &[usize]) -> usize {
-    let (root, tail) = Node::parse(&data);
-    assert!(tail.is_empty());
+fn part2(root: &Node) -> usize {
     root.value()
 }
 
