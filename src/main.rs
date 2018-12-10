@@ -1,10 +1,12 @@
 extern crate chrono;
+extern crate criterion_plot;
 extern crate ndarray;
 extern crate petgraph;
 use std::env;
 use std::process;
 
 mod day1;
+mod day10;
 mod day2;
 mod day3;
 mod day4;
@@ -43,6 +45,7 @@ fn run_day(day_num: usize) {
         7 => day7::run(),
         8 => day8::run(),
         9 => day9::run(),
+        10 => day10::run(),
         _ => {
             println!("Invalid day: {}", day_num);
             process::exit(1);
