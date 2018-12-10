@@ -1,3 +1,4 @@
+use std::collections::VecDeque;
 use std::fs;
 
 pub fn run() {
@@ -13,28 +14,39 @@ fn setup() -> (usize, usize) {
 }
 
 fn part1(num_players: usize, last_marble: usize) -> usize {
-    let mut marbles = vec![0usize];
+    let mut marbles = VecDeque::new();
+    marbles.push_front(0);
     let mut scores = vec![0usize; num_players];
     let mut next_marble: usize = 1;
-    let mut curr_idx: usize = 0;
     loop {
         for player in 0..num_players {
             if next_marble % 23 == 0 {
-                curr_idx = (curr_idx + marbles.len() - 7) % marbles.len();
-                scores[player] += next_marble + marbles.remove(curr_idx);
+                rotate_right(&mut marbles, 7);
+                scores[player] += next_marble + marbles.pop_back().unwrap();
+                rotate_left(&mut marbles, 1);
             } else {
-                curr_idx = (curr_idx + 1) % marbles.len() + 1;
-                if curr_idx == marbles.len() {
-                    marbles.push(next_marble);
-                } else {
-                    marbles.insert(curr_idx, next_marble);
-                }
+                rotate_left(&mut marbles, 1);
+                marbles.push_back(next_marble);
             }
             next_marble += 1;
             if next_marble == last_marble {
                 return scores.into_iter().max().unwrap();
             }
         }
+    }
+}
+
+fn rotate_right(deque: &mut VecDeque<usize>, k: usize) {
+    for _ in 0..k {
+        let tmp = deque.pop_back().unwrap();
+        deque.push_front(tmp);
+    }
+}
+
+fn rotate_left(deque: &mut VecDeque<usize>, k: usize) {
+    for _ in 0..k {
+        let tmp = deque.pop_front().unwrap();
+        deque.push_back(tmp);
     }
 }
 
