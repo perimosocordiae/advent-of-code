@@ -49,8 +49,7 @@ fn part2(grid: &Array2<i32>) -> (usize, usize, usize) {
                 (val, (yy, xx))
             })
             .max()
-            .unwrap()
-            .clone();
+            .unwrap();
         if val > best_val {
             best_val = val;
             best_yx = yx;

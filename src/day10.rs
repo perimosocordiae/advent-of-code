@@ -37,7 +37,7 @@ fn setup() -> (Vec<Point>, Vec<Point>) {
 
 fn part1(start_points: &[Point], velocities: &[Point]) {
     let n = start_points.len();
-    let mut points: Vec<Point> = start_points.iter().cloned().collect();
+    let mut points: Vec<Point> = start_points.to_vec();
     for i in 0..n {
         points[i] += velocities[i] * 10027;
     }
