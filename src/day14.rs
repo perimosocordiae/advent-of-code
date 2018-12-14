@@ -8,7 +8,10 @@ pub fn run() {
 
 fn setup(input: &str) -> (usize, Vec<usize>) {
     let num_recipes = input.parse().unwrap();
-    let pattern = input.chars().map(|c| c.to_digit(10).unwrap() as usize).collect();
+    let pattern = input
+        .chars()
+        .map(|c| c.to_digit(10).unwrap() as usize)
+        .collect();
     (num_recipes, pattern)
 }
 
