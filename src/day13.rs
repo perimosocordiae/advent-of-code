@@ -105,11 +105,8 @@ fn setup(path: &str) -> (Vec<Vec<TrackType>>, Vec<Cart>) {
     let mut carts = vec![];
     for (row, line) in lines.into_iter().enumerate() {
         for (col, c) in line.chars().enumerate() {
-            match parse_cart(row, col, c) {
-                Some(cart) => {
-                    carts.push(cart);
-                }
-                None => {}
+            if let Some(cart) = parse_cart(row, col, c) {
+                carts.push(cart);
             }
         }
     }
