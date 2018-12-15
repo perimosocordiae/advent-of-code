@@ -12,6 +12,7 @@ mod day11;
 mod day12;
 mod day13;
 mod day14;
+mod day15;
 mod day2;
 mod day3;
 mod day4;
@@ -55,6 +56,7 @@ fn run_day(day_num: usize) {
         12 => day12::run(),
         13 => day13::run(),
         14 => day14::run(),
+        15 => day15::run(),
         _ => {
             println!("Invalid day: {}", day_num);
             process::exit(1);
