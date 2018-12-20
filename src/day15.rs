@@ -202,7 +202,7 @@ fn find_move(
     targets_idx: &[usize],
 ) -> Option<(i32, i32)> {
     let mut target_locs = HashSet::new();
-    for tidx in targets_idx.into_iter() {
+    for tidx in targets_idx.iter() {
         let t = &units[*tidx];
         for c in next_moves(&grid, &units, t.row, t.col) {
             target_locs.insert(c);
@@ -243,10 +243,8 @@ fn shortest_path(
         if cost > *dist.get(&loc).unwrap_or(&large_cost) {
             continue;
         }
-        if target_locs.contains(&loc) {
-            if max_cost > cost {
-                max_cost = cost;
-            }
+        if target_locs.contains(&loc) && max_cost > cost {
+            max_cost = cost;
         }
         if cost >= max_cost {
             continue;
@@ -266,7 +264,7 @@ fn shortest_path(
     }
     let target_loc = *target_locs
         .iter()
-        .min_by_key(|loc| (*dist.get(&loc).unwrap_or(&large_cost), loc.clone()))
+        .min_by_key(|&loc| (*dist.get(&loc).unwrap_or(&large_cost), loc))
         .expect("No target_locs");
     Some((max_cost, target_loc))
 }

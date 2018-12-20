@@ -39,11 +39,11 @@ fn part2(samples: &[SampleInstruction], program: &[Instruction]) -> usize {
                 known_ids.insert(*id, choices.drain().next().unwrap());
             }
         }
-        unknown_ids.retain(|_, v| v.len() > 0);
+        unknown_ids.retain(|_, v| !v.is_empty());
     }
     let mut state = [0usize; 4];
     for inst in program.iter() {
-        let op = known_ids.get(&inst.opcode_id).unwrap();
+        let op = &known_ids[&inst.opcode_id];
         state = op.apply(inst, &state);
     }
     state[0]
@@ -68,7 +68,7 @@ fn setup(path: &str) -> (Vec<SampleInstruction>, Vec<Instruction>) {
         });
     }
     let mut program = vec![];
-    while let Some(line) = lines.next() {
+    for line in lines {
         if let Ok(inst) = line.parse() {
             program.push(inst);
         }
@@ -162,7 +162,7 @@ enum Opcode {
 
 impl Opcode {
     fn apply(self, inst: &Instruction, state: &[usize; 4]) -> [usize; 4] {
-        let mut result = state.clone();
+        let mut result = *state;
         result[inst.c] = match self {
             Opcode::AddR => state[inst.a] + state[inst.b],
             Opcode::AddI => state[inst.a] + inst.b,
@@ -202,7 +202,7 @@ impl Opcode {
             Opcode::EqRI,
             Opcode::EqRR,
         ];
-        OPCODES.into_iter()
+        OPCODES.iter()
     }
 }
 
