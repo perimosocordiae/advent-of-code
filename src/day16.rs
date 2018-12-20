@@ -1,15 +1,91 @@
 use core::slice::Iter;
+use std::collections::{HashMap, HashSet};
+use std::fs;
 use std::num::ParseIntError;
 use std::str::FromStr;
 
 pub fn run() {
-    let example = SampleInstruction {
-        before: [3, 2, 1, 1],
-        after: [3, 2, 2, 1],
-        inst: "9 2 1 2".parse().unwrap(),
-    };
-    let matches = example.matching_opcodes();
-    println!("{:?}", matches);
+    let (samples, program) = setup("inputs/16.txt");
+    println!("Part 1: {}", part1(&samples));
+    println!("Part 2: {}", part2(&samples, &program));
+}
+
+fn part1(samples: &[SampleInstruction]) -> usize {
+    samples
+        .iter()
+        .map(|s| s.num_matching_opcodes())
+        .filter(|&n| n >= 3)
+        .count()
+}
+
+fn part2(samples: &[SampleInstruction], program: &[Instruction]) -> usize {
+    let mut unknown_ids = HashMap::new();
+    let mut known_ids = HashMap::new();
+    for s in samples.iter() {
+        let matches = s.matching_opcodes();
+        if matches.len() == 1 {
+            known_ids.insert(s.inst.opcode_id, matches[0]);
+            continue;
+        }
+        let choices: HashSet<Opcode> = matches.into_iter().collect();
+        unknown_ids.insert(s.inst.opcode_id, choices);
+    }
+    while !unknown_ids.is_empty() {
+        for (id, choices) in unknown_ids.iter_mut() {
+            for op in known_ids.values() {
+                choices.remove(op);
+            }
+            if choices.len() == 1 {
+                known_ids.insert(*id, choices.drain().next().unwrap());
+            }
+        }
+        unknown_ids.retain(|_, v| v.len() > 0);
+    }
+    let mut state = [0usize; 4];
+    for inst in program.iter() {
+        let op = known_ids.get(&inst.opcode_id).unwrap();
+        state = op.apply(inst, &state);
+    }
+    state[0]
+}
+
+fn setup(path: &str) -> (Vec<SampleInstruction>, Vec<Instruction>) {
+    let data = fs::read_to_string(path).unwrap();
+    let mut lines = data.lines();
+    let mut samples = vec![];
+    while let Some(line) = lines.next() {
+        if !line.starts_with("Before: ") {
+            break;
+        }
+        let before = parse_quad_array(line);
+        let inst = lines.next().unwrap().parse().unwrap();
+        let after = parse_quad_array(lines.next().unwrap());
+        lines.next().unwrap(); // empty
+        samples.push(SampleInstruction {
+            before,
+            after,
+            inst,
+        });
+    }
+    let mut program = vec![];
+    while let Some(line) = lines.next() {
+        if let Ok(inst) = line.parse() {
+            program.push(inst);
+        }
+    }
+    (samples, program)
+}
+
+fn parse_quad_array(s: &str) -> [usize; 4] {
+    let a = s.find('[').unwrap() + 1;
+    let b = s.rfind(']').unwrap();
+    let parts: Vec<&str> = s[a..b].split(", ").collect();
+    [
+        parts[0].parse().unwrap(),
+        parts[1].parse().unwrap(),
+        parts[2].parse().unwrap(),
+        parts[3].parse().unwrap(),
+    ]
 }
 
 #[derive(Debug)]
@@ -24,12 +100,21 @@ impl SampleInstruction {
         let mut matches = vec![];
         for &op in Opcode::all_opcodes() {
             let result = op.apply(&self.inst, &self.before);
-            // println!("{:?}: {:?} vs {:?}", op, result, self.after);
             if result == self.after {
                 matches.push(op);
             }
         }
         matches
+    }
+    fn num_matching_opcodes(&self) -> usize {
+        let mut count = 0usize;
+        for &op in Opcode::all_opcodes() {
+            let result = op.apply(&self.inst, &self.before);
+            if result == self.after {
+                count += 1;
+            }
+        }
+        count
     }
 }
 
@@ -55,7 +140,7 @@ impl FromStr for Instruction {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 enum Opcode {
     AddR,
     AddI,
