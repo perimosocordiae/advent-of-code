@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::fs;
 use std::num::ParseIntError;
 use std::str::FromStr;
@@ -12,14 +13,22 @@ fn part1(segments: &[LineSegment], min_y: usize, max_y: usize) -> usize {
     let mut segs = segments.to_vec();
     let mut start_pts = vec![(500, min_y - 1)];
     let mut num_at_rest = 0;
+    let mut checked = HashSet::new();
     while let Some(pt) = start_pts.pop() {
+        // println!("{:?} from {:?}", pt, start_pts);
+        if !checked.insert(pt) {
+            continue;
+        }
+        if in_clay(pt.0, pt.1, &segs) {
+            continue;
+        }
         let start_x = pt.0;
         let mut start_y = pt.1;
         loop {
             let result = try_fill((start_x, start_y), &segs, max_y);
             if let Some(seg) = result.0 {
                 // it's a fill line
-                println!("Filling {:?}", seg);
+                // println!("Filling {:?}", seg);
                 num_at_rest += seg.num_squares();
                 start_y = seg.y_min - 1;
                 segs.push(seg);
@@ -33,7 +42,6 @@ fn part1(segments: &[LineSegment], min_y: usize, max_y: usize) -> usize {
             }
             break;
         }
-        println!("start_pts = {:?}", start_pts);
     }
     println!("Added {} resting water", num_at_rest);
     // Do a final flow count
@@ -42,6 +50,7 @@ fn part1(segments: &[LineSegment], min_y: usize, max_y: usize) -> usize {
 }
 
 fn flow_count(x: usize, y: usize, segments: &[LineSegment], max_y: usize) -> usize {
+    // TODO: avoid double-counting paths
     if let Some(yy) = drop_down(&(x, y), &segments, max_y) {
         // spread left + right
         let mut n = yy - y;
