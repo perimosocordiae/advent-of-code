@@ -5,17 +5,17 @@ use std::str::FromStr;
 
 pub fn run() {
     let (segs, a, b) = setup("inputs/17.txt");
-    println!("Part 1: {}", part1(&segs, a, b));
-    //println!("Part 2: {}", part2(&samples, &program));
+    let filled = fill_with_water(&segs, a, b);
+    let num_filled = filled[segs.len()..].iter().map(|s| s.num_squares()).sum();
+    println!("Part 1: {}", part1(&filled, a, b, num_filled));
+    println!("Part 2: {}", num_filled);
 }
 
-fn part1(segments: &[LineSegment], min_y: usize, max_y: usize) -> usize {
+fn fill_with_water(segments: &[LineSegment], min_y: usize, max_y: usize) -> Vec<LineSegment> {
     let mut segs = segments.to_vec();
     let mut start_pts = vec![(500, min_y - 1)];
-    let mut num_at_rest = 0;
     let mut checked = HashSet::new();
     while let Some(pt) = start_pts.pop() {
-        // println!("{:?} from {:?}", pt, start_pts);
         if !checked.insert(pt) {
             continue;
         }
@@ -28,8 +28,6 @@ fn part1(segments: &[LineSegment], min_y: usize, max_y: usize) -> usize {
             let result = try_fill((start_x, start_y), &segs, max_y);
             if let Some(seg) = result.0 {
                 // it's a fill line
-                // println!("Filling {:?}", seg);
-                num_at_rest += seg.num_squares();
                 start_y = seg.y_min - 1;
                 segs.push(seg);
                 continue;
@@ -43,41 +41,58 @@ fn part1(segments: &[LineSegment], min_y: usize, max_y: usize) -> usize {
             break;
         }
     }
-    println!("Added {} resting water", num_at_rest);
-    // Do a final flow count
-    let n = flow_count(500, min_y - 1, &segs, max_y);
-    num_at_rest + n
+    segs
 }
 
-fn flow_count(x: usize, y: usize, segments: &[LineSegment], max_y: usize) -> usize {
-    // TODO: avoid double-counting paths
+fn part1(filled_segs: &[LineSegment], min_y: usize, max_y: usize, num_at_rest: usize) -> usize {
+    // Do a final flow count
+    let mut seen = HashSet::new();
+    flow_count(500, min_y - 1, &filled_segs, max_y, &mut seen);
+    // Discard the starting point at (500, 0) that's included in `seen`.
+    num_at_rest + seen.len() - 1
+}
+
+fn flow_count(
+    x: usize,
+    y: usize,
+    segments: &[LineSegment],
+    max_y: usize,
+    seen: &mut HashSet<(usize, usize)>,
+) {
+    // avoid double-counting paths
+    if !seen.insert((x, y)) {
+        return;
+    }
     if let Some(yy) = drop_down(&(x, y), &segments, max_y) {
+        for i in y..=yy {
+            seen.insert((x, i));
+        }
         // spread left + right
-        let mut n = yy - y;
         let mut xx = x - 1;
         while in_sand(xx, yy, &segments) {
             if in_clay(xx, yy + 1, &segments) {
+                seen.insert((xx, yy));
                 xx -= 1;
             } else {
-                n += flow_count(xx, yy, &segments, max_y) - 1;
+                flow_count(xx, yy, &segments, max_y, seen);
                 break;
             }
         }
-        n += x - xx;
         xx = x + 1;
         while in_sand(xx, yy, &segments) {
             if in_clay(xx, yy + 1, &segments) {
+                seen.insert((xx, yy));
                 xx += 1;
             } else {
-                n += flow_count(xx, yy, &segments, max_y) - 1;
+                flow_count(xx, yy, &segments, max_y, seen);
                 break;
             }
         }
-        n += xx - x;
-        n
     } else {
         // fell straight off
-        max_y - y + 1
+        for i in y..=max_y {
+            seen.insert((x, i));
+        }
     }
 }
 
