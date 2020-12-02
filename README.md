@@ -9,6 +9,12 @@ To run a given day's solution:
 cargo run --bin day01
 ```
 
+To run tests for all days together:
+
+```
+cargo test
+```
+
 ## 2018
 
 Implemented with Rust in directory `advent2018/`.
