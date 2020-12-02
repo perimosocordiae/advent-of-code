@@ -16,7 +16,7 @@ fn part1(ip: usize, program: &[Instruction]) -> usize {
 }
 
 fn part2() -> usize {
-    run_decoded_program(10551311)
+    run_decoded_program(10_551_311)
 }
 
 fn run_decoded_program(r1: usize) -> usize {
