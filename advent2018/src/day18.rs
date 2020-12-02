@@ -142,7 +142,7 @@ fn print_grid(grid: &[Vec<Cell>], num_minutes: usize) {
             .collect();
         println!("{}", line);
     }
-    println!("");
+    println!();
 }
 
 fn setup(path: &str) -> Vec<Vec<Cell>> {

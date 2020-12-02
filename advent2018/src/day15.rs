@@ -182,7 +182,7 @@ fn display_state(grid: &[Vec<Cell>], units: &[Unit]) {
         let t: String = pieces.join(", ");
         println!("{}   {}", s, t);
     }
-    println!("");
+    println!();
 }
 
 fn try_attack(units: &[Unit], idx: usize, targets_idx: &[usize]) -> Option<usize> {
