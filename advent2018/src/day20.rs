@@ -17,38 +17,44 @@ struct RegexTree {
 
 enum RegexPiece {
     Leaf(String),
-    Node(Rc<RegexTree>)
+    Node(Rc<RegexTree>),
 }
 
 impl RegexTree {
-    fn add_literal(&mut self, c: char) {
-        if let Some(RegexPiece::Leaf(s)) = self.parts.last_mut() {
-            s.push(c);
-        } else {
-            self.parts.push(RegexPiece::Leaf(c.to_string()));
+    /*
+        fn add_literal(&mut self, c: char) {
+            if let Some(RegexPiece::Leaf(s)) = self.parts.last_mut() {
+                s.push(c);
+            } else {
+                self.parts.push(RegexPiece::Leaf(c.to_string()));
+            }
         }
-    }
-    fn start_group(&mut self) -> &mut RegexTree {
-        let mut child = RegexTree { parts: vec![], parent: Some(Rc::new(*self)) };
-        let mut tmp = Rc::new(child);
-        self.parts.push(RegexPiece::Node(tmp.clone()));
-        Rc::get_mut(&mut tmp).unwrap()
-    }
-    fn end_group(&mut self) -> &mut RegexTree {
-        &mut *self.parent.unwrap()
-    }
-    fn next_case(&mut self) {
-        self.parts.push(RegexPiece::Leaf(String::new()));
-    }
+        fn start_group(&mut self) -> &mut RegexTree {
+            let mut child = RegexTree { parts: vec![], parent: Some(Rc::new(*self)) };
+            let mut tmp = Rc::new(child);
+            self.parts.push(RegexPiece::Node(tmp.clone()));
+            Rc::get_mut(&mut tmp).unwrap()
+        }
+        fn end_group(&mut self) -> &mut RegexTree {
+            &mut *self.parent.unwrap()
+        }
+        fn next_case(&mut self) {
+            self.parts.push(RegexPiece::Leaf(String::new()));
+        }
+    */
 }
 
 fn setup(path: &str) -> RegexTree {
     let data = fs::read_to_string(path).unwrap();
-    parse_pattern(&data[1..data.len()-1])  // trim ^ and $
+    parse_pattern(&data[1..data.len() - 1]) // trim ^ and $
 }
 
 fn parse_pattern(pattern: &str) -> RegexTree {
-    let mut root = RegexTree { parts: vec![], parent: None };
+    let mut root = RegexTree {
+        parts: vec![],
+        parent: None,
+    };
+    /*
     let mut node = &mut root;
     for c in pattern.chars() {
         match c {
@@ -59,5 +65,6 @@ fn parse_pattern(pattern: &str) -> RegexTree {
             _ => panic!("Unexpected char in pattern: {}", c)
         };
     }
+    */
     root
 }
