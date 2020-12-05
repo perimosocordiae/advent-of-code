@@ -62,7 +62,7 @@ impl PasswordAndPolicy {
 }
 
 impl FromStr for PasswordAndPolicy {
-    type Err = Box<std::error::Error>;
+    type Err = Box<dyn std::error::Error>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut p = PasswordAndPolicy::default();
