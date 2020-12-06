@@ -1,6 +1,8 @@
 use advent2020::*;
 use std::str::FromStr;
-use text_io::try_scan;
+
+#[macro_use]
+extern crate scan_fmt;
 
 fn main() {
     let data = read_string("inputs/02.full");
@@ -36,7 +38,6 @@ fn part2(input: &str) -> usize {
         .count()
 }
 
-#[derive(Debug, Default)]
 struct PasswordAndPolicy {
     password: String,
     policy: char,
@@ -65,8 +66,13 @@ impl FromStr for PasswordAndPolicy {
     type Err = Box<dyn std::error::Error>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut p = PasswordAndPolicy::default();
-        try_scan!(s.bytes() => "{}-{} {}: {}", p.idx1, p.idx2, p.policy, p.password);
-        Ok(p)
+        let (idx1, idx2, policy, password) =
+            scan_fmt!(&s, "{d}-{d} {}: {}", usize, usize, char, String)?;
+        Ok(PasswordAndPolicy {
+            password,
+            policy,
+            idx1,
+            idx2,
+        })
     }
 }
