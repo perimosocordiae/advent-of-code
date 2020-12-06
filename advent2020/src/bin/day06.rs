@@ -1,5 +1,5 @@
 use advent2020::*;
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 fn main() {
     let data = read_string("inputs/06.full");
@@ -44,15 +44,15 @@ fn decode_group_one(group: &str) -> usize {
 }
 
 fn decode_group_two(group: &str) -> usize {
-    let mut yesses = vec![];
+    let mut answers: HashMap<char, usize> = HashMap::new();
     for line in group.lines() {
-        let ans: HashSet<char> = line.chars().collect();
-        yesses.push(ans);
+        for ch in line.chars() {
+            *answers.entry(ch).or_insert(0) += 1;
+        }
     }
-    yesses
-        .iter()
-        .fold(yesses[0].clone(), |acc, set| {
-            acc.intersection(&set).cloned().collect()
-        })
-        .len()
+    let num_lines = group.lines().count();
+    answers
+        .values()
+        .filter(|&count| *count == num_lines)
+        .count()
 }
