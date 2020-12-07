@@ -25,9 +25,8 @@ fn part1(input: &str) -> usize {
     while let Some(bag) = queue.pop() {
         if let Some(outer_bags) = rules.get(bag) {
             for outer in outer_bags {
-                if !seen.contains(outer) {
+                if seen.insert(outer) {
                     queue.push(outer);
-                    seen.insert(outer);
                 }
             }
         }
