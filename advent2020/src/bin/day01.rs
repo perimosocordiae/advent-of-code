@@ -1,7 +1,6 @@
 use advent2020::*;
 
 fn main() {
-    foo::demo();
     let nums = read_integers("inputs/01.full");
     println!("Part 1: {}", part1(&nums));
     println!("Part 2: {}", part2(&nums));

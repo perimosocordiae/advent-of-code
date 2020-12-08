@@ -3,7 +3,10 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
 
-pub mod foo;
+#[macro_use]
+extern crate scan_fmt;
+
+pub mod bootcode;
 
 pub fn read_string(name: &str) -> String {
     let path = Path::new(name);
@@ -24,4 +27,9 @@ pub fn read_string(name: &str) -> String {
 pub fn read_integers(name: &str) -> Vec<i64> {
     let data = read_string(name);
     data.lines().map(|x| x.parse::<i64>().unwrap()).collect()
+}
+
+pub fn read_bootcode(name: &str) -> Vec<bootcode::Instruction> {
+    let data = read_string(name);
+    data.lines().map(|line| line.parse().unwrap()).collect()
 }
