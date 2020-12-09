@@ -48,7 +48,7 @@ fn parse_rules_in_to_out(input: &str) -> HashMap<String, Vec<String>> {
             let inner_bag = rhs_cap[1].to_string();
             rules
                 .entry(inner_bag)
-                .or_insert_with(|| vec![])
+                .or_insert_with(Vec::new)
                 .push(outer_bag.to_string());
         }
     }
