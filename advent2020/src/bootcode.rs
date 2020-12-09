@@ -8,7 +8,7 @@ pub enum Instruction {
 }
 
 impl FromStr for Instruction {
-    type Err = Box<dyn std::error::Error>;
+    type Err = scan_fmt::parse::ScanError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (inst, arg) = scan_fmt!(&s, "{} {}", String, i32)?;
@@ -22,13 +22,20 @@ impl FromStr for Instruction {
 }
 
 #[derive(Debug)]
-pub struct Interpreter {
-    pub instructions: Vec<Instruction>,
+pub struct Interpreter<'a> {
+    instructions: &'a [Instruction],
     pub ip: i32,
     pub acc: i32,
 }
 
-impl Interpreter {
+impl Interpreter<'_> {
+    pub fn new(code: &[Instruction]) -> Interpreter {
+        Interpreter {
+            instructions: code,
+            ip: 0,
+            acc: 0,
+        }
+    }
     pub fn step(&mut self) -> bool {
         let idx: usize = self.ip as usize;
         // println!(

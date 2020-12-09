@@ -13,11 +13,7 @@ fn test_part1() {
 
 fn part1(path: &str) -> i32 {
     let data = read_bootcode(path);
-    let mut int = bootcode::Interpreter {
-        instructions: data,
-        ip: 0,
-        acc: 0,
-    };
+    let mut int = bootcode::Interpreter::new(&data);
     let mut seen = HashSet::new();
     seen.insert(int.ip);
     while int.step() {
@@ -59,11 +55,7 @@ fn flip_inst(inst: bootcode::Instruction) -> bootcode::Instruction {
 }
 
 fn does_halt(code: &[bootcode::Instruction]) -> Option<i32> {
-    let mut int = bootcode::Interpreter {
-        instructions: code.to_vec(),
-        ip: 0,
-        acc: 0,
-    };
+    let mut int = bootcode::Interpreter::new(&code);
     let mut seen = HashSet::new();
     seen.insert(int.ip);
     while int.step() {
