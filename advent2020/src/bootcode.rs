@@ -36,22 +36,16 @@ impl Interpreter<'_> {
             acc: 0,
         }
     }
+
     pub fn step(&mut self) -> bool {
-        let idx: usize = self.ip as usize;
-        // println!(
-        //     "ip={}, acc={}, inst={:?}",
-        //     self.ip, self.acc, self.instructions[idx]
-        // );
-        match self.instructions[idx] {
-            Instruction::Nop(_) => self.ip += 1,
+        self.ip += match self.instructions[self.ip as usize] {
+            Instruction::Nop(_) => 1,
             Instruction::Acc(x) => {
                 self.acc += x;
-                self.ip += 1
+                1
             }
-            Instruction::Jmp(x) => {
-                self.ip += x;
-            }
-        }
+            Instruction::Jmp(x) => x,
+        };
         self.ip != self.instructions.len() as i32
     }
 }
