@@ -95,7 +95,7 @@ fn is_occupied(seat: Space) -> bool {
 
 fn occupied_neighbors(grid: &GridRef, i: usize, j: usize) -> usize {
     let mut count = 0;
-    for &r in [i - 1, i + 1].into_iter() {
+    for &r in [i - 1, i + 1].iter() {
         count += grid[r][(j - 1)..=(j + 1)]
             .iter()
             .filter(|&s| is_occupied(*s))

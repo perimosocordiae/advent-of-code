@@ -1,5 +1,6 @@
 use advent2020::*;
 use itertools::Itertools;
+use std::cmp::Ordering;
 
 fn main() {
     let nums = read_integers("inputs/09.full");
@@ -47,11 +48,16 @@ fn part2(target: i64, nums: &[i64]) -> i64 {
         let mut sum: i64 = 0;
         for (j, x) in nums[i..].iter().enumerate() {
             sum += x;
-            if sum == target {
-                let seq = &nums[i..(i + j)];
-                return seq.iter().min().unwrap() + seq.iter().max().unwrap();
-            } else if sum > target {
-                break;
+            match sum.cmp(&target) {
+                Ordering::Equal => {
+                    let seq = &nums[i..(i + j)];
+                    return seq.iter().min().unwrap()
+                        + seq.iter().max().unwrap();
+                }
+                Ordering::Greater => {
+                    break;
+                }
+                _ => {}
             }
         }
     }
