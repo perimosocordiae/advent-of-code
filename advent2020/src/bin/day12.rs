@@ -20,12 +20,12 @@ fn part2_small() {
 }
 
 fn part1(input: &str) -> i32 {
-    let mut pos = [0, 0];
+    let mut pos = Position { lat: 0, lon: 0 };
     let mut facing = 0;
     for step in input.lines().map(|p| p.parse::<NavStep>().unwrap()) {
         match step {
             NavStep::Forward(x) => {
-                move_direction(&facing_step(facing, x), &mut pos);
+                pos.move_direction(&facing_step(facing, x));
             }
             NavStep::Left(x) => {
                 facing += x;
@@ -40,55 +40,34 @@ fn part1(input: &str) -> i32 {
                 }
             }
             _ => {
-                move_direction(&step, &mut pos);
+                pos.move_direction(&step);
             }
         }
     }
-    pos[0].abs() + pos[1].abs()
+    pos.l1_norm()
 }
 
 fn part2(input: &str) -> i32 {
-    let mut pos = [0, 0];
-    let mut waypoint = [1, 10];
+    let mut pos = Position { lat: 0, lon: 0 };
+    let mut waypoint = Position { lat: 1, lon: 10 };
     for step in input.lines().map(|p| p.parse::<NavStep>().unwrap()) {
         match step {
             NavStep::Forward(x) => {
-                pos[0] += waypoint[0] * x;
-                pos[1] += waypoint[1] * x;
+                pos.lat += waypoint.lat * x;
+                pos.lon += waypoint.lon * x;
             }
             NavStep::Left(x) => {
-                rotate_waypoint(x, &mut waypoint);
+                waypoint.rotate(x);
             }
             NavStep::Right(x) => {
-                rotate_waypoint(360 - x, &mut waypoint);
+                waypoint.rotate(360 - x);
             }
             _ => {
-                move_direction(&step, &mut waypoint);
+                waypoint.move_direction(&step);
             }
         }
     }
-    pos[0].abs() + pos[1].abs()
-}
-
-fn rotate_waypoint(angle: i32, pos: &mut [i32]) {
-    match angle {
-        90 => {
-            // n4 e10 -> n10 e-4
-            pos.swap(0, 1);
-            pos[1] *= -1;
-        }
-        180 => {
-            // n4 e10 -> n-4 e-10
-            pos[0] *= -1;
-            pos[1] *= -1;
-        }
-        270 => {
-            // n4 e10 -> n-10 e4
-            pos.swap(0, 1);
-            pos[0] *= -1;
-        }
-        _ => panic!("Bad angle: {}", angle),
-    }
+    pos.l1_norm()
 }
 
 fn facing_step(facing: i32, amount: i32) -> NavStep {
@@ -101,21 +80,56 @@ fn facing_step(facing: i32, amount: i32) -> NavStep {
     }
 }
 
-fn move_direction(dir: &NavStep, pos: &mut [i32]) {
-    match dir {
-        NavStep::North(x) => {
-            pos[0] += x;
+#[derive(Debug)]
+struct Position {
+    lat: i32,
+    lon: i32,
+}
+
+impl Position {
+    fn l1_norm(&self) -> i32 {
+        self.lat.abs() + self.lon.abs()
+    }
+
+    fn move_direction(&mut self, dir: &NavStep) {
+        match dir {
+            NavStep::North(x) => {
+                self.lat += x;
+            }
+            NavStep::South(x) => {
+                self.lat -= x;
+            }
+            NavStep::East(x) => {
+                self.lon += x;
+            }
+            NavStep::West(x) => {
+                self.lon -= x;
+            }
+            _ => panic!("Bad direction: {:?}", dir),
         }
-        NavStep::South(x) => {
-            pos[0] -= x;
+    }
+
+    fn rotate(&mut self, angle: i32) {
+        match angle {
+            90 => {
+                // n4 e10 -> n10 e-4
+                let tmp = -self.lat;
+                self.lat = self.lon;
+                self.lon = tmp;
+            }
+            180 => {
+                // n4 e10 -> n-4 e-10
+                self.lat *= -1;
+                self.lon *= -1;
+            }
+            270 => {
+                // n4 e10 -> n-10 e4
+                let tmp = -self.lon;
+                self.lon = self.lat;
+                self.lat = tmp;
+            }
+            _ => panic!("Bad angle: {}", angle),
         }
-        NavStep::East(x) => {
-            pos[1] += x;
-        }
-        NavStep::West(x) => {
-            pos[1] -= x;
-        }
-        _ => panic!("Bad direction: {:?}", dir),
     }
 }
 
