@@ -1,4 +1,5 @@
 use advent2020::*;
+use itertools::Itertools;
 use std::collections::HashMap;
 
 #[macro_use]
@@ -7,6 +8,7 @@ extern crate scan_fmt;
 fn main() {
     let prog = parse_program("inputs/14.full");
     println!("part1: {}", part1(&prog));
+    println!("part2: {}", part2(&prog));
 }
 
 #[test]
@@ -15,8 +17,8 @@ fn part1_small() {
     assert_eq!(part1(&prog), 165);
 }
 
-fn part1(prog: &[ProgramBlock]) -> i64 {
-    let mut ram = HashMap::<usize, i64>::new();
+fn part1(prog: &[ProgramBlock]) -> usize {
+    let mut ram = HashMap::<usize, usize>::new();
     for block in prog {
         for (addr, val) in block.assignments.iter() {
             ram.insert(*addr, block.update_value(*val));
@@ -25,19 +27,61 @@ fn part1(prog: &[ProgramBlock]) -> i64 {
     ram.values().sum()
 }
 
+#[test]
+fn part2_small() {
+    let prog = parse_program("inputs/14.test2");
+    assert_eq!(part2(&prog), 208);
+}
+
+fn part2(prog: &[ProgramBlock]) -> usize {
+    let mut ram = HashMap::<usize, usize>::new();
+    for block in prog {
+        for (addr, val) in block.assignments.iter() {
+            block.expand_address(*addr, |a| {
+                ram.insert(a, *val);
+            });
+        }
+    }
+    ram.values().sum()
+}
+
 #[derive(Debug)]
 struct ProgramBlock {
-    force_on: i64,
-    force_off: i64,
-    assignments: Vec<(usize, i64)>,
+    force_on: usize,
+    force_off: usize,
+    floating_bits: Vec<usize>,
+    assignments: Vec<(usize, usize)>,
 }
 
 impl ProgramBlock {
-    fn update_value(&self, val: i64) -> i64 {
+    fn update_value(&self, val: usize) -> usize {
         let mut result = val;
         result |= self.force_on;
         result &= !self.force_off;
         result
+    }
+    fn expand_address(
+        &self,
+        addr: usize,
+        mut callback: impl FnMut(usize) -> (),
+    ) {
+        let mut result = addr;
+        result |= self.force_on as usize;
+        for comb in self
+            .floating_bits
+            .iter()
+            .map(|_| [false, true].iter())
+            .multi_cartesian_product()
+        {
+            for (f, &b) in self.floating_bits.iter().zip(comb) {
+                if b {
+                    result |= f;
+                } else {
+                    result &= !f;
+                }
+            }
+            callback(result);
+        }
     }
 }
 
@@ -47,16 +91,11 @@ fn parse_program(path: &str) -> Vec<ProgramBlock> {
     for line in data.lines() {
         match &line[..4] {
             "mask" => {
-                let (force_on, force_off) = parse_mask(&line[7..]);
-                prog.push(ProgramBlock {
-                    force_on,
-                    force_off,
-                    assignments: vec![],
-                })
+                prog.push(parse_mask(&line[7..]));
             }
             "mem[" => {
                 let (addr, val) =
-                    scan_fmt!(&line, "mem[{d}] = {d}", usize, i64).unwrap();
+                    scan_fmt!(&line, "mem[{d}] = {d}", usize, usize).unwrap();
                 prog.last_mut().unwrap().assignments.push((addr, val));
             }
             _ => panic!("Unknown program line: {:?}", line),
@@ -65,21 +104,29 @@ fn parse_program(path: &str) -> Vec<ProgramBlock> {
     prog
 }
 
-fn parse_mask(mask: &str) -> (i64, i64) {
+fn parse_mask(mask: &str) -> ProgramBlock {
     let mut force_on = 0;
     let mut force_off = 0;
+    let mut floating_bits = vec![];
     for (i, ch) in mask.chars().enumerate() {
-        let shift = 35 - i;
+        let shifted: usize = 1 << (35 - i);
         match ch {
             '1' => {
-                force_on |= 1 << shift;
+                force_on |= shifted;
             }
             '0' => {
-                force_off |= 1 << shift;
+                force_off |= shifted;
             }
-            'X' => {}
+            'X' => {
+                floating_bits.push(shifted);
+            }
             _ => panic!("unexpected mask char: {}", ch),
         }
     }
-    (force_on, force_off)
+    ProgramBlock {
+        force_on,
+        force_off,
+        floating_bits,
+        assignments: vec![],
+    }
 }
