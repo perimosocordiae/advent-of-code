@@ -32,7 +32,7 @@ fn part2_small() {
     assert_eq!(part2(&[67, 7, 59, 61]), 754018);
     assert_eq!(part2(&[67, 0, 7, 59, 61]), 779210);
     assert_eq!(part2(&[67, 7, 0, 59, 61]), 1261476);
-    // assert_eq!(part2(&[1789, 37, 47, 1889]), 1202161486);
+    assert_eq!(part2(&[1789, 37, 47, 1889]), 1202161486);
 }
 
 fn part2(buses: &[i64]) -> i64 {
@@ -43,15 +43,14 @@ fn part2(buses: &[i64]) -> i64 {
         .map(|(i, &b)| (b, (b - ((i as i64) % b)) % b))
         .collect();
     tmp.sort_unstable();
-    println!("tmp = {:?}", tmp);
-    let (step, offset) = tmp.pop().unwrap();
-    for i in 1.. {
-        let t = i * step + offset;
-        if tmp.iter().all(|(b, off)| t % b == *off) {
-            return t;
+    let (mut step, mut t) = tmp.pop().unwrap();
+    for (b, offset) in tmp.iter().rev() {
+        while t % b != *offset {
+            t += step;
         }
+        step *= b;
     }
-    unreachable!("Exited infinite loop");
+    t
 }
 
 fn parse_input(path: &str) -> (i64, Vec<i64>) {
