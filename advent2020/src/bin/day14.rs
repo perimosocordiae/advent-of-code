@@ -60,11 +60,7 @@ impl ProgramBlock {
         result &= !self.force_off;
         result
     }
-    fn expand_address(
-        &self,
-        addr: usize,
-        mut callback: impl FnMut(usize) -> (),
-    ) {
+    fn expand_address(&self, addr: usize, mut callback: impl FnMut(usize)) {
         let mut result = addr;
         result |= self.force_on as usize;
         for comb in self
