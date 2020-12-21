@@ -20,15 +20,13 @@ fn part1_small() {
 fn part1(tiles: &HashMap<usize, Tile>) -> usize {
     let mut sketches = HashMap::<String, Vec<usize>>::new();
     for (tile_id, tile) in tiles {
-        let sides = vec![&tile.top, &tile.left, &tile.right, &tile.bottom];
-        for side in sides {
-            let rev_side = side.chars().rev().collect::<String>();
+        for side in tile.edges.iter() {
             sketches
                 .entry(side.to_string())
                 .or_insert_with(Vec::new)
                 .push(*tile_id);
             sketches
-                .entry(rev_side)
+                .entry(side.chars().rev().collect())
                 .or_insert_with(Vec::new)
                 .push(*tile_id);
         }
@@ -51,10 +49,9 @@ fn part1(tiles: &HashMap<usize, Tile>) -> usize {
 
 #[derive(Debug)]
 struct Tile {
-    top: String,
-    left: String,
-    right: String,
-    bottom: String,
+    // order is clockwise: top, right, bottom, left
+    edges: Vec<String>,
+    // TODO: store the image (non-border parts of the tile) for part 2.
 }
 
 fn parse_tiles(path: &str) -> HashMap<usize, Tile> {
@@ -64,19 +61,18 @@ fn parse_tiles(path: &str) -> HashMap<usize, Tile> {
         let tile_id = scan_fmt!(&chunk, "Tile {d}:", usize).unwrap();
         let tile_lines: Vec<&str> = chunk.lines().skip(1).collect();
         let n = tile_lines.len();
-        let left: String = (0..n)
-            .map(|i| tile_lines[i].chars().next().unwrap())
-            .collect();
+        let top = tile_lines[0].to_string();
         let right: String = (0..n)
             .map(|i| tile_lines[i].chars().last().unwrap())
             .collect();
+        let left: String = (0..n)
+            .map(|i| tile_lines[i].chars().next().unwrap())
+            .collect();
+        let bottom = tile_lines[n - 1].to_string();
         out.insert(
             tile_id,
             Tile {
-                top: tile_lines[0].to_string(),
-                bottom: tile_lines[n - 1].to_string(),
-                left,
-                right,
+                edges: vec![top, right, bottom, left],
             },
         );
     }
