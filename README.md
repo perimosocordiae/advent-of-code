@@ -1,5 +1,9 @@
 # advent-of-code
 
+## 2021
+
+Implemented in Icarus in directory `advent2021/`.
+
 ## 2020
 
 Implemented with Rust in directory `advent2020/`.

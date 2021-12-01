@@ -1,0 +1,55 @@
+-- ::= import "core.ic"
+c ::= import "c/stdlib.ic"
+file ::= import "file.ic"
+io ::= import "io.ic"
+memory ::= import "memory.ic"
+
+ParseInt64 ::= (s: []char) -> i64 {
+  return c.atol(&s[0])
+}
+
+CountIncreases ::= (depths: []i64) -> i64 {
+  num_increases := 0
+  prev := depths[0]
+  for (1, depths.length as i64) do [i: i64] {
+    d := depths[i]
+    if (d > prev) then {
+      num_increases += 1
+    }
+    prev = d
+  }
+  return num_increases
+}
+
+CountWindowIncreases ::= (depths: []i64, window_size: u64) -> i64 {
+  length := depths.length - window_size + 1
+  convolved := memory.allocate(i64, length)
+  for (0, length as i64) do [i: i64] {
+    convolved[i] = 0
+    for (0, window_size as i64) do [j: i64] {
+      convolved[i] += depths[i + j]
+    }
+  }
+  result := CountIncreases(convolved)
+  memory.deallocate(convolved.data)
+  return result
+}
+
+Solve ::= (filename: []char) -> () {
+  buffer: [2048; i64]
+  idx := 0
+  file.With(filename) open [f: file.File] {
+    file.Lines(f) each [line: []char] {
+      buffer[idx] = ParseInt64(line)
+      idx += 1
+    }
+  }
+  values := slice(&buffer[0], idx)
+  io.Print("Part 1: ", CountIncreases(values), !\n)
+  io.Print("Part 2: ", CountWindowIncreases(values, 3), !\n)
+}
+
+io.Print("Test:\n")
+Solve("inputs/01.test")
+io.Print("\nFull:\n")
+Solve("inputs/01.full")
