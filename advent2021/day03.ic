@@ -2,8 +2,11 @@
 io ::= import "io.ic"
 file ::= import "file.ic"
 
+MAX_ROWS ::= 1024
+MAX_COLS ::= 16
+
 Solve ::= (path: []char) -> () {
-  buffer: [1024, 16; bool]
+  buffer: [MAX_ROWS, MAX_COLS; bool]
   num_rows: i64
   num_cols: i64
 
@@ -20,7 +23,7 @@ Solve ::= (path: []char) -> () {
   }
 
   // Part 1: find most common entry per column
-  counts: [16; i64]
+  counts: [MAX_COLS; i64]
   for (0, num_rows) do [i: i64] {
     for (0, num_cols) do [j: i64] {
       if (buffer[i][j]) then {
@@ -43,10 +46,23 @@ Solve ::= (path: []char) -> () {
     factor += factor
   }
   io.Print("Part 1: ", gamma * epsilon, !\n)
+
+  // Part 2: iteratively drop rows
+  for (0, num_cols) do [j: i64] {
+    col_count := 0
+    for (0, num_rows) do [i: i64] {
+      if (buffer[i][j]) then {
+        col_count += 1
+      }
+    }
+    col_thresh := (num_rows as f64) / 2.0
+    col_target := (col_count as f64 >= col_thresh)
+    // TODO: drop rows where buffer[i][j] != col_target
+  }
 }
 
 io.Print("Test:\n")
 Solve("inputs/03.test")
-io.Print("\nFull:\n")
-Solve("inputs/03.full")
+//io.Print("\nFull:\n")
+//Solve("inputs/03.full")
 
