@@ -5,7 +5,7 @@ io ::= import "io.ic"
 memory ::= import "memory.ic"
 
 ParseInt64 ::= (s: []char) -> i64 {
-  return c.atol(&s[0])
+  return c.atol(s.data)
 }
 
 CountIncreases ::= (depths: []i64) -> i64 {

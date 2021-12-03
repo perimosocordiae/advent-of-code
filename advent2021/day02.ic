@@ -1,0 +1,94 @@
+-- ::= import "core.ic"
+c ::= import "c/stdlib.ic"
+file ::= import "file.ic"
+io ::= import "io.ic"
+memory ::= import "memory.ic"
+
+ParseInt64 ::= (s: []char) -> i64 {
+  return c.atol(s.data)
+}
+
+heading ::= enum { HORIZONTAL \\ VERTICAL }
+
+command ::= struct {
+  direction: bool  // TODO: use heading here
+  amount: i64
+}
+
+PartOne ::= (commands: []command) -> i64 {
+  x_pos: i64 = 0
+  y_pos: i64 = 0
+  for (0, commands.length as i64) do [i: i64] {
+    ci := commands[i]
+    if (ci.direction) then {
+      y_pos += ci.amount
+    } else {
+      x_pos += ci.amount
+    }
+  }
+  return x_pos * y_pos
+}
+
+PartTwo ::= (commands: []command) -> i64 {
+  x_pos: i64 = 0
+  y_pos: i64 = 0
+  aim: i64 = 0
+  for (0, commands.length as i64) do [i: i64] {
+    ci := commands[i]
+    if (ci.direction) then {
+      aim += ci.amount
+    } else {
+      x_pos += ci.amount
+      y_pos += aim * ci.amount
+    }
+  }
+  return x_pos * y_pos
+}
+
+Solve ::= (filename: []char) -> () {
+  buffer: [1024; command]
+  idx := 0
+  file.With(filename) open [f: file.File] {
+    file.Lines(f) each [line: []char] {
+      if (line[0] == !f) then {
+        // buffer[idx].direction = heading.HORIZONTAL
+        buffer[idx].amount = ParseInt64(slice(&line[8], line.length))
+      } else {
+        buffer[idx].direction = true // TODO: use heading.VERTICAL
+        if (line[0] == !u) then {
+          buffer[idx].amount = -ParseInt64(slice(&line[3], line.length))
+        } else {
+          buffer[idx].amount = ParseInt64(slice(&line[5], line.length))
+        }
+      }
+      idx += 1
+    }
+  }
+  values := slice(&buffer[0], idx)
+  io.Print("Part 1: ", PartOne(values), !\n)
+  // io.Print("Part 2: ", PartTwo(values), !\n)
+  
+  // XXX: These are needed to prevent a type verification error in PartOne???
+  // x_pos: i64 = 0
+  // ci := buffer[0]
+
+  // XXX: PartTwo doesn't pass type verification
+  x_pos: i64 = 0
+  y_pos: i64 = 0
+  aim: i64 = 0
+  for (0, idx) do [i: i64] {
+    ci := buffer[i]
+    if (ci.direction) then {
+      aim += ci.amount
+    } else {
+      x_pos += ci.amount
+      y_pos += aim * ci.amount
+    }
+  }
+  io.Print("Part 2: ", x_pos * y_pos, !\n)
+}
+
+io.Print("Test:\n")
+Solve("inputs/02.test")
+io.Print("\nFull:\n")
+Solve("inputs/02.full")
