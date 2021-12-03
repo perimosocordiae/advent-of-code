@@ -2,7 +2,6 @@
 c ::= import "c/stdlib.ic"
 file ::= import "file.ic"
 io ::= import "io.ic"
-memory ::= import "memory.ic"
 
 ParseInt64 ::= (s: []char) -> i64 {
   return c.atol(s.data)
