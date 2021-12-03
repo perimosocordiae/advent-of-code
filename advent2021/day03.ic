@@ -1,0 +1,52 @@
+-- ::= import "core.ic"
+io ::= import "io.ic"
+file ::= import "file.ic"
+
+Solve ::= (path: []char) -> () {
+  buffer: [1024, 16; bool]
+  num_rows: i64
+  num_cols: i64
+
+  file.With(path) open [f: file.File] {
+    file.Lines(f) each [line: []char] {
+      num_rows += 1
+      num_cols = line.length as i64 - 1
+      for (0, num_cols) do [i: i64] {
+        if (line[i] == !1) then {
+          buffer[num_rows][i] = true
+        }
+      }
+    }
+  }
+
+  // Part 1: find most common entry per column
+  counts: [16; i64]
+  for (0, num_rows) do [i: i64] {
+    for (0, num_cols) do [j: i64] {
+      if (buffer[i][j]) then {
+        counts[j] += 1
+      }
+    }
+  }
+
+  gamma: i64
+  epsilon: i64
+  factor := 1
+  for (0, num_cols) do [i: i64] {
+    idx := num_cols - i - 1
+    thresh := (num_rows as f64) / 2.0
+    if (counts[idx] as f64 >= thresh) then {
+      gamma += factor
+    } else {
+      epsilon += factor
+    }
+    factor += factor
+  }
+  io.Print("Part 1: ", gamma * epsilon, !\n)
+}
+
+io.Print("Test:\n")
+Solve("inputs/03.test")
+io.Print("\nFull:\n")
+Solve("inputs/03.full")
+
