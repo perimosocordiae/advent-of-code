@@ -49,7 +49,7 @@ Solve ::= (path: []char) -> () {
 
   // Part 2: iteratively drop rows
   for (0, num_cols) do [j: i64] {
-    col_count := 0
+    col_count: i64 = 0
     for (0, num_rows) do [i: i64] {
       if (buffer[i][j]) then {
         col_count += 1

@@ -1,0 +1,124 @@
+-- ::= import "core.ic"
+io ::= import "io.ic"
+file ::= import "file.ic"
+cstr ::= import "c/string.ic"
+cstd ::= import "c/stdlib.ic"
+
+ParseInt64 ::= (s: []char) -> i64 {
+  return cstd.atol(s.data)
+}
+
+IsWinner ::= (board: [5, 5; i64]) -> bool {
+  for (0, 5) do [i: i64] {
+    full_row := true
+    full_col := true
+    for (0, 5) do [j: i64] {
+      if (board[i][j] != -1) then {
+        full_row = false
+      }
+      if (board[j][i] != -1) then {
+        full_col = false
+      }
+    }
+    if (full_row or full_col) then {
+      return true
+    }
+  }
+  return false
+}
+
+SumUnmarked ::= (board: [5, 5; i64]) -> i64 {
+  sum: i64 = 0
+  for (0, 5) do [j: i64] {
+    for (0, 5) do [k: i64] {
+      if (board[j][k] > 0) then {
+        sum += board[j][k]
+      }
+    }
+  }
+  return sum
+}
+
+MAX_NUMS ::= 128
+MAX_BOARDS ::= 128
+COMMA ::= !, as i32
+
+Solve ::= (path: []char) -> () {
+  nums: [MAX_NUMS; i64]
+  boards: [MAX_BOARDS, 5, 5; i64]
+  num_idx: i64 = 0
+  board_idx: i64 = -1
+  row: i64 = 0
+
+  file.With(path) open [f: file.File] {
+    file.Lines(f) each [line: []char] {
+      if (num_idx == 0) then {
+        // Parse comma-separated integers into `nums`.
+        start: [*]char = line.data
+        end: [*]char = cstr.strchr(start, COMMA)
+        while (end > start) do {
+          nums[num_idx] = ParseInt64(slice(start, (end - start) as u64))
+          num_idx += 1
+          start = end + 1
+          end = cstr.strchr(start, COMMA)
+        }
+        nums[num_idx] = ParseInt64(slice(start, 2))
+        num_idx += 1
+      } else if (line[0] == !\n) then {
+        // This is a blank line, advance the board index.
+        board_idx += 1
+        row = 0
+      } else {
+        // Parse 5 columns of 2-digit integers into the current board.
+        for (0, 5) do [i: i64] {
+          boards[board_idx][row][i] = ParseInt64(slice(&line[3*i], 2))
+        }
+        row += 1
+      }
+    }
+    board_idx += 1
+  }
+
+  is_first_winner := true
+  done_boards: [MAX_BOARDS; bool]
+  // Mark each number in each board, checking for a winner.
+  for (0, num_idx) do [nidx: i64] {
+    x := nums[nidx]
+    for (0, board_idx) do [i: i64] {
+      if (not done_boards[i]) then {
+        for (0, 5) do [j: i64] {
+          for (0, 5) do [k: i64] {
+            if (boards[i][j][k] == x) then {
+              boards[i][j][k] = -1
+            }
+          }
+        }
+        if (IsWinner(boards[i])) then {
+          done_boards[i] = true
+          if (is_first_winner) then {
+            answer := SumUnmarked(boards[i]) * x
+            io.Print("Part 1: ", answer, !\n)
+            is_first_winner = false
+          } else {
+            // check if this is the last board to finish.
+            all_done := true
+            for (0, board_idx) do [b: i64] {
+              if (not done_boards[b]) then {
+                all_done = false
+              }
+            }
+            if (all_done) then {
+              answer := SumUnmarked(boards[i]) * x
+              io.Print("Part 2: ", answer, !\n)
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+io.Print("Test:\n")
+Solve("inputs/04.test")
+io.Print("Full:\n")
+Solve("inputs/04.full")
