@@ -46,7 +46,7 @@ PartTwo ::= (commands: []command) -> i64 {
 
 Solve ::= (filename: []char) -> () {
   buffer: [1024; command]
-  idx := 0
+  idx: u64
   file.With(filename) open [f: file.File] {
     file.Lines(f) each [line: []char] {
       if (line[0] == !f) then {
@@ -75,7 +75,7 @@ Solve ::= (filename: []char) -> () {
   x_pos: i64 = 0
   y_pos: i64 = 0
   aim: i64 = 0
-  for (0, idx) do [i: i64] {
+  for (0, idx as i64) do [i: i64] {
     ci := buffer[i]
     if (ci.direction) then {
       aim += ci.amount
