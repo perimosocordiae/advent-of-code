@@ -1,9 +1,8 @@
 -- ::= import "core.ic"
 io ::= import "io.ic"
 file ::= import "file.ic"
-cstr ::= import "c/string.ic"
 cstd ::= import "c/stdlib.ic"
-
+str  ::= import "string/split.ic"
 ParseInt64 ::= (s: []char) -> i64 {
   return cstd.atol(s.data)
 }
@@ -54,16 +53,10 @@ Solve ::= (path: []char) -> () {
     file.Lines(f) each [line: []char] {
       if (num_idx == 0) then {
         // Parse comma-separated integers into `nums`.
-        start: [*]char = line.data
-        end: [*]char = cstr.strchr(start, COMMA)
-        while (end > start) do {
-          nums[num_idx] = ParseInt64(slice(start, (end - start) as u64))
+        str.Split (line, !,) do [str_num: []char] {
+          nums[num_idx] = ParseInt64(str_num)
           num_idx += 1
-          start = end + 1
-          end = cstr.strchr(start, COMMA)
         }
-        nums[num_idx] = ParseInt64(slice(start, 2))
-        num_idx += 1
       } else if (line[0] == !\n) then {
         // This is a blank line, advance the board index.
         board_idx += 1
