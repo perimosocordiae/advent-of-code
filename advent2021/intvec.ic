@@ -1,0 +1,43 @@
+-- ::= import "core.ic"
+memory ::= import "memory.ic"
+
+#{export}
+intvec ::= struct {
+  #{export}
+  _data: [*]i64
+  _length: u64
+  _capacity: u64
+
+  (destroy) ::= (self: *intvec) -> () {
+    memory.deallocate(self._data)
+  }
+}
+
+#{export}
+make ::= (fill: i64, len: u64) -> intvec {
+  buffer := memory.allocate(i64, len)
+  for (0, len as i64) do [idx: i64] {
+    buffer[idx] = init fill
+  }
+  return intvec.{
+    _data = buffer.data
+    _length = len
+    _capacity = len
+  }
+}
+
+#{export}
+at ::= (self: *intvec, idx: i64) -> i64 {
+  return self._data[idx]
+}
+
+#{export}
+ref ::= (self: *intvec, idx: i64) -> *i64 {
+  return &self._data[idx]
+}
+
+#{export}
+as_slice ::= (self: *intvec) -> []i64 {
+  return slice(&self._data[0], self._length)
+}
+

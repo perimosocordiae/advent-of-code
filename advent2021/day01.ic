@@ -3,6 +3,7 @@ c ::= import "c/stdlib.ic"
 file ::= import "file.ic"
 io ::= import "io.ic"
 memory ::= import "memory.ic"
+vec ::= import "intvec.ic"
 
 ParseInt64 ::= (s: []char) -> i64 {
   return c.atol(s.data)
@@ -23,16 +24,13 @@ CountIncreases ::= (depths: []i64) -> i64 {
 
 CountWindowIncreases ::= (depths: []i64, window_size: u64) -> i64 {
   length := depths.length - window_size + 1
-  convolved := memory.allocate(i64, length)
+  convolved := vec.make(0, length)
   for (0, length as i64) do [i: i64] {
-    convolved[i] = 0
     for (0, window_size as i64) do [j: i64] {
-      convolved[i] += depths[i + j]
+      @(convolved'ref(i)) += depths[i + j]
     }
   }
-  result := CountIncreases(convolved)
-  memory.deallocate(convolved.data)
-  return result
+  return CountIncreases(convolved'as_slice())
 }
 
 Solve ::= (filename: []char) -> () {
