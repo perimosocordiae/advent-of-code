@@ -1,0 +1,75 @@
+-- ::= import "core.ic"
+io ::= import "io.ic"
+str ::= import "string/split.ic"
+cstd ::= import "c/stdlib.ic"
+file ::= import "file.ic"
+
+MAX_LINES ::= 512
+MAX_COORD ::= 1000
+
+ParseInt64 ::= (s: []char) -> i64 {
+  return cstd.atol(s.data)
+}
+
+Solve ::= (filename: []char) -> () {
+  buffer: [MAX_LINES, 4; i64]
+  idx := 0
+  file.With(filename) open [f: file.File] {
+    file.Lines(f) each [line: []char] {
+      j := 0
+      str.Split2 (line, " -> ") do [s: []char] {
+        str.Split (s, !,) do [x: []char] {
+          buffer[idx][j] = ParseInt64(x)
+          j += 1
+        }
+      }
+      idx += 1
+    }
+  }
+
+  grid: [MAX_COORD, MAX_COORD; i64]
+  for (0, idx) do [i: i64] {
+    for (0, idx) do [j: i64] {
+      grid[i][j] = 0
+    }
+  }
+
+  for (0, idx) do [i: i64] {
+    x1 := buffer[i][0]
+    y1 := buffer[i][1]
+    x2 := buffer[i][2]
+    y2 := buffer[i][3]
+    if (x1 == x2) then {
+      // horizontal
+      if (y1 > y2) then {
+        for (y2, y1 + 1) do [c: i64] { grid[c][x1] += 1}
+      } else {
+        for (y1, y2 + 1) do [c: i64] { grid[c][x1] += 1}
+      }
+    } else if (y1 == y2) then {
+      // vertical
+      if (x1 > x2) then {
+        for (x2, x1 + 1) do [r: i64] { grid[y1][r] += 1}
+      } else {
+        for (x1, x2 + 1) do [r: i64] { grid[y1][r] += 1}
+      }
+    }
+  }
+
+  // Count grid cells larger than 1.
+  count: i64
+  for (0, MAX_COORD) do [i: i64] {
+    for (0, MAX_COORD) do [j: i64] {
+      if (grid[i][j] > 1) then {
+        count += 1
+      }
+    }
+  }
+  io.Print("Part 1: ", count, !\n)
+}
+
+io.Print("Test:\n")
+Solve("inputs/05.test")
+
+io.Print("Full:\n")
+Solve("inputs/05.full")
