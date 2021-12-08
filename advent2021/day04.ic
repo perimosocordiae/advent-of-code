@@ -3,6 +3,7 @@ io ::= import "io.ic"
 file ::= import "file.ic"
 cstd ::= import "c/stdlib.ic"
 str  ::= import "string/split.ic"
+
 ParseInt64 ::= (s: []char) -> i64 {
   return cstd.atol(s.data)
 }
@@ -40,7 +41,6 @@ SumUnmarked ::= (board: [5, 5; i64]) -> i64 {
 
 MAX_NUMS ::= 128
 MAX_BOARDS ::= 128
-COMMA ::= !, as i32
 
 Solve ::= (path: []char) -> () {
   nums: [MAX_NUMS; i64]
