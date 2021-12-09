@@ -11,6 +11,14 @@ ParseInt64 ::= (s: []char) -> i64 {
   return cstd.atol(s.data)
 }
 
+Abs ::= (x: i64) -> i64 {
+  if (x >= 0) then {
+    return x
+  } else {
+    return -x
+  }
+}
+
 Solve ::= (filename: []char) -> () {
   buffer: [MAX_LINES, 4; i64]
   idx := 0
@@ -42,16 +50,16 @@ Solve ::= (filename: []char) -> () {
     if (x1 == x2) then {
       // horizontal
       if (y1 > y2) then {
-        for (y2, y1 + 1) do [c: i64] { grid[c][x1] += 1}
+        for (y2, y1 + 1) do [y: i64] { grid[y][x1] += 1}
       } else {
-        for (y1, y2 + 1) do [c: i64] { grid[c][x1] += 1}
+        for (y1, y2 + 1) do [y: i64] { grid[y][x1] += 1}
       }
     } else if (y1 == y2) then {
       // vertical
       if (x1 > x2) then {
-        for (x2, x1 + 1) do [r: i64] { grid[y1][r] += 1}
+        for (x2, x1 + 1) do [x: i64] { grid[y1][x] += 1}
       } else {
-        for (x1, x2 + 1) do [r: i64] { grid[y1][r] += 1}
+        for (x1, x2 + 1) do [x: i64] { grid[y1][x] += 1}
       }
     }
   }
@@ -66,6 +74,50 @@ Solve ::= (filename: []char) -> () {
     }
   }
   io.Print("Part 1: ", count, !\n)
+
+  // Now handle diagonals as well
+  for (0, idx) do [i: i64] {
+    x1 := buffer[i][0]
+    y1 := buffer[i][1]
+    x2 := buffer[i][2]
+    y2 := buffer[i][3]
+    delta := Abs(x1 - x2)
+    if (delta == Abs(y1 - y2)) then {
+      // diagonal
+      if (x1 > x2) then {
+        if (y1 > y2) then {
+          for (0, delta + 1) do [step: i64] {
+            grid[y1 - step][x1 - step] += 1
+          }
+        } else {
+          for (0, delta + 1) do [step: i64] {
+            grid[y1 + step][x1 - step] += 1
+          }
+        }
+      } else {
+        if (y1 > y2) then {
+          for (0, delta + 1) do [step: i64] {
+            grid[y1 - step][x1 + step] += 1
+          }
+        } else {
+          for (0, delta + 1) do [step: i64] {
+            grid[y1 + step][x1 + step] += 1
+          }
+        }
+      }
+    }
+  }
+
+  // Re-count grid cells larger than 1.
+  count = 0
+  for (0, MAX_COORD) do [i: i64] {
+    for (0, MAX_COORD) do [j: i64] {
+      if (grid[i][j] > 1) then {
+        count += 1
+      }
+    }
+  }
+  io.Print("Part 2: ", count, !\n)
 }
 
 io.Print("Test:\n")
