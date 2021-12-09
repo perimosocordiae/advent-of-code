@@ -3,13 +3,23 @@ memory ::= import "memory.ic"
 
 #{export}
 intvec ::= struct {
-  #{export}
   _data: [*]i64
-  _length: u64
+  #{export}
+  length: u64
   _capacity: u64
 
   (destroy) ::= (self: *intvec) -> () {
     memory.deallocate(self._data)
+  }
+}
+
+#{export}
+empty ::= (capacity: u64) -> intvec {
+  buffer := memory.allocate(i64, capacity)
+  return intvec.{
+    _data = buffer.data
+    length = 0
+    _capacity = capacity
   }
 }
 
@@ -21,7 +31,7 @@ make ::= (fill: i64, len: u64) -> intvec {
   }
   return intvec.{
     _data = buffer.data
-    _length = len
+    length = len
     _capacity = len
   }
 }
@@ -38,6 +48,20 @@ ref ::= (self: *intvec, idx: i64) -> *i64 {
 
 #{export}
 as_slice ::= (self: *intvec) -> []i64 {
-  return slice(&self._data[0], self._length)
+  return slice(&self._data[0], self.length)
 }
 
+#{export}
+append ::= (self: *intvec, val: i64) -> () {
+  if (self.length == self._capacity) then {
+    self._capacity *= 2
+    new_buffer := memory.allocate(i64, self._capacity)
+    for (0, self.length as i64) do [idx: i64] {
+      new_buffer[idx] = self._data[idx]
+    }
+    memory.deallocate(self._data)
+    self._data = new_buffer.data
+  }
+  self._data[self.length] = val
+  self.length += 1
+}
