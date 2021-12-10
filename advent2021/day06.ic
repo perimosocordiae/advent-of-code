@@ -3,33 +3,33 @@ io ::= import "io.ic"
 str ::= import "string/split.ic"
 file ::= import "file.ic"
 cstd ::= import "c/stdlib.ic"
-intvec ::= import "lib/intvec.ic"
+ring_buffer ::= import "lib/ring_buffer.ic"
 
 ParseInt64 ::= (s: []char) -> i64 {
   return cstd.atol(s.data)
 }
 
 Solve ::= (filename: []char) -> () {
-  buffer := intvec.empty(6000)
+  counts := ring_buffer.make(0, 9)
   file.With(filename) open [f: file.File] {
     file.Lines(f) each [line: []char] {
       str.Split(line, !,) do [num_str: []char] {
-        buffer'append(ParseInt64(num_str))
+        num := ParseInt64(num_str)
+        @(counts'ref(num)) += 1
       }
     }
   }
   for (0, 80) do [day: i64] {
-    n := buffer.length as i64
-    for (0, n) do [i: i64] {
-      if (buffer'at(i) == 0) then {
-        buffer'append(8)
-        @(buffer'ref(i)) = 6
-      } else {
-        @(buffer'ref(i)) -= 1
-      }
-    }
+    new_fish := counts'pop()
+    @(counts'ref(6)) += new_fish
   }
-  io.Print("Part 1: ", buffer.length, !\n)
+  io.Print("Part 1: ", counts'sum(), !\n)
+
+  for (80, 256) do [day: i64] {
+    new_fish := counts'pop()
+    @(counts'ref(6)) += new_fish
+  }
+  io.Print("Part 2: ", counts'sum(), !\n)
 }
 
 io.Print("Test:\n")

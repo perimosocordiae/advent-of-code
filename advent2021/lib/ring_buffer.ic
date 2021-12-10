@@ -1,0 +1,54 @@
+-- ::= import "core.ic"
+memory ::= import "memory.ic"
+
+#{export}
+ring_buffer ::= struct {
+  _data: [*]i64
+  _length: i64
+  _start: i64
+
+  (destroy) ::= (self: *ring_buffer) -> () {
+    memory.deallocate(self._data)
+  }
+}
+
+#{export}
+make ::= (fill: i64, len: u64) -> ring_buffer {
+  buffer := memory.allocate(i64, len)
+  for (0, len as i64) do [idx: i64] {
+    buffer[idx] = init fill
+  }
+  return ring_buffer.{
+    _data = buffer.data
+    _length = len as i64
+    _start = 0
+  }
+}
+
+#{export}
+at ::= (self: *ring_buffer, idx: i64) -> i64 {
+  i := (self._start + idx) % self._length
+  return self._data[i]
+}
+
+#{export}
+ref ::= (self: *ring_buffer, idx: i64) -> *i64 {
+  i := (self._start + idx) % self._length
+  return &self._data[i]
+}
+
+#{export}
+pop ::= (self: *ring_buffer) -> i64 {
+  i := self._start
+  self._start = (self._start + 1) % self._length
+  return self._data[i]
+}
+
+#{export}
+sum ::= (self: *ring_buffer) -> i64 {
+  x := 0
+  for (0, self._length) do [idx: i64] {
+    x += self._data[idx]
+  }
+  return x
+}
