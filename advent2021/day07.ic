@@ -1,0 +1,47 @@
+-- ::= import "core.ic"
+io ::= import "io.ic"
+str ::= import "string/split.ic"
+vec ::= import "lib/intvec.ic"
+file ::= import "file.ic"
+util ::= import "lib/util.ic"
+
+PartOne ::= (crabs: *vec.intvec) -> i64 {
+  num_crabs := crabs.length as i64
+  max_pos := 0
+  for (0, num_crabs) do [i: i64] {
+    if (crabs'at(i) > max_pos) then {
+      max_pos = crabs'at(i)
+    }
+  }
+  min_cost := max_pos * num_crabs
+  for (0, max_pos) do [pos: i64] {
+    cost := 0
+    for (0, num_crabs) do [i: i64] {
+      cost += util.Abs(pos - crabs'at(i))
+    }
+    if (cost < min_cost) then {
+      min_cost = cost
+    } else if (cost > min_cost) then {
+      return min_cost
+    }
+  }
+  return min_cost
+}
+
+Solve ::= (filename: []char) -> () {
+  crabs := vec.empty(10)
+  file.With(filename) open [f: file.File] {
+    file.Lines(f) each [line: []char] {
+      str.Split(line, !,) do [num_str: []char] {
+        crabs'append(util.ParseInt64(num_str))
+      }
+    }
+  }
+  io.Print("Part 1: ", PartOne(&crabs), !\n)
+}
+
+io.Print("Test:\n")
+Solve("inputs/07.test")
+
+io.Print("Full:\n")
+Solve("inputs/07.full")

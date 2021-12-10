@@ -1,6 +1,16 @@
+-- ::= import "core.ic"
 cstd ::= import "c/stdlib.ic"
 
 #{export}
 ParseInt64 ::= (s: []char) -> i64 {
   return cstd.atol(s.data)
+}
+
+#{export}
+Abs ::= (x: i64) -> i64 {
+  if (x >= 0) then {
+    return x
+  } else {
+    return -x
+  }
 }
