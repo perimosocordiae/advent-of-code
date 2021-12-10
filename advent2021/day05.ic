@@ -1,15 +1,11 @@
 -- ::= import "core.ic"
 io ::= import "io.ic"
 str ::= import "string/split.ic"
-cstd ::= import "c/stdlib.ic"
 file ::= import "file.ic"
+util ::= import "lib/util.ic"
 
 MAX_LINES ::= 512
 MAX_COORD ::= 1000
-
-ParseInt64 ::= (s: []char) -> i64 {
-  return cstd.atol(s.data)
-}
 
 Abs ::= (x: i64) -> i64 {
   if (x >= 0) then {
@@ -27,7 +23,7 @@ Solve ::= (filename: []char) -> () {
       j := 0
       str.Split2 (line, " -> ") do [s: []char] {
         str.Split (s, !,) do [x: []char] {
-          buffer[idx][j] = ParseInt64(x)
+          buffer[idx][j] = util.ParseInt64(x)
           j += 1
         }
       }

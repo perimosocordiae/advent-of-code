@@ -1,13 +1,8 @@
 -- ::= import "core.ic"
-c ::= import "c/stdlib.ic"
-file ::= import "file.ic"
 io ::= import "io.ic"
-memory ::= import "memory.ic"
 vec ::= import "lib/intvec.ic"
-
-ParseInt64 ::= (s: []char) -> i64 {
-  return c.atol(s.data)
-}
+file ::= import "file.ic"
+util ::= import "lib/util.ic"
 
 CountIncreases ::= (depths: []i64) -> i64 {
   num_increases := 0
@@ -38,7 +33,7 @@ Solve ::= (filename: []char) -> () {
   idx: u64
   file.With(filename) open [f: file.File] {
     file.Lines(f) each [line: []char] {
-      buffer[idx] = ParseInt64(line)
+      buffer[idx] = util.ParseInt64(line)
       idx += 1
     }
   }

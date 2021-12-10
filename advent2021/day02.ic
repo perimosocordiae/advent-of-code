@@ -1,11 +1,7 @@
 -- ::= import "core.ic"
-c ::= import "c/stdlib.ic"
-file ::= import "file.ic"
 io ::= import "io.ic"
-
-ParseInt64 ::= (s: []char) -> i64 {
-  return c.atol(s.data)
-}
+file ::= import "file.ic"
+util ::= import "lib/util.ic"
 
 heading ::= enum { HORIZONTAL \\ VERTICAL }
 
@@ -51,13 +47,13 @@ Solve ::= (filename: []char) -> () {
     file.Lines(f) each [line: []char] {
       if (line[0] == !f) then {
         // buffer[idx].direction = heading.HORIZONTAL
-        buffer[idx].amount = ParseInt64(slice(&line[8], line.length))
+        buffer[idx].amount = util.ParseInt64(slice(&line[8], line.length))
       } else {
         buffer[idx].direction = true // TODO: use heading.VERTICAL
         if (line[0] == !u) then {
-          buffer[idx].amount = -ParseInt64(slice(&line[3], line.length))
+          buffer[idx].amount = -util.ParseInt64(slice(&line[3], line.length))
         } else {
-          buffer[idx].amount = ParseInt64(slice(&line[5], line.length))
+          buffer[idx].amount = util.ParseInt64(slice(&line[5], line.length))
         }
       }
       idx += 1

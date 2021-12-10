@@ -2,19 +2,15 @@
 io ::= import "io.ic"
 str ::= import "string/split.ic"
 file ::= import "file.ic"
-cstd ::= import "c/stdlib.ic"
+util ::= import "lib/util.ic"
 ring_buffer ::= import "lib/ring_buffer.ic"
-
-ParseInt64 ::= (s: []char) -> i64 {
-  return cstd.atol(s.data)
-}
 
 Solve ::= (filename: []char) -> () {
   counts := ring_buffer.make(0, 9)
   file.With(filename) open [f: file.File] {
     file.Lines(f) each [line: []char] {
       str.Split(line, !,) do [num_str: []char] {
-        num := ParseInt64(num_str)
+        num := util.ParseInt64(num_str)
         @(counts'ref(num)) += 1
       }
     }
