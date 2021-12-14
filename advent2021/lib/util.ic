@@ -5,6 +5,10 @@ cstd ::= import "c/stdlib.ic"
 ParseInt64 ::= (s: []char) -> i64 {
   return cstd.atol(s.data)
 }
+#{export}
+ParseInt64 ::= (c: char) -> i64 {
+  return (c as i64) - (!0 as i64)
+}
 
 #{export}
 Abs ::= (x: i64) -> i64 {

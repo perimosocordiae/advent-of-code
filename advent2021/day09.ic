@@ -1,0 +1,50 @@
+-- ::= import "core.ic"
+io ::= import "io.ic"
+str ::= import "string/split.ic"
+file ::= import "file.ic"
+util ::= import "lib/util.ic"
+
+MAX_HEIGHT ::= 102
+MAX_WIDTH ::= 102
+INFINITY ::= 9999999
+
+Solve ::= (filename: []char) -> () {
+  grid: [MAX_HEIGHT, MAX_WIDTH; i64]
+  num_rows := 1
+  num_cols := 1
+  file.With(filename) open [f: file.File] {
+    file.Lines(f) each [line: []char] {
+      grid[num_rows][0] = INFINITY
+      num_cols = 1
+      for (0, line.length as i64 - 1) do [idx: i64] {
+        grid[num_rows][num_cols] = util.ParseInt64(line[idx])
+        num_cols += 1
+      }
+      grid[num_rows][num_cols] = INFINITY
+      num_rows += 1
+    }
+  }
+  for (0, num_cols + 1) do [col: i64] {
+    grid[0][col] = INFINITY
+    grid[num_rows][col] = INFINITY
+  }
+
+  // Part 1
+  sum_risk := 0
+  for (1, num_rows) do [row: i64] {
+    for (1, num_cols) do [col: i64] {
+      x := grid[row][col]
+      if (x < grid[row - 1][col] and x < grid[row + 1][col] and
+          x < grid[row][col - 1] and x < grid[row][col + 1]) then {
+        sum_risk += (x + 1)
+      }
+    }
+  }
+  io.Print("Part 1: ", sum_risk, !\n)
+}
+
+io.Print("Test:\n")
+Solve("inputs/09.test")
+
+io.Print("Full:\n")
+Solve("inputs/09.full")
