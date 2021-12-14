@@ -2,21 +2,20 @@
 io ::= import "io.ic"
 str ::= import "string/split.ic"
 file ::= import "file.ic"
+str2 ::= import "string/strip.ic"
 
 Solve ::= (filename: []char) -> () {
   count := 0
   file.With(filename) open [f: file.File] {
     file.Lines(f) each [line: []char] {
+      data := str2.StripSuffix(line, "\n")
       side := 0
-      str.Split2(line, " | ") do [side_str: []char] {
+      str.Split2(data, " | ") do [side_str: []char] {
         if (side == 0) then {
           side = 1
         } else {
           str.Split(side_str, ! ) do [word: []char] {
             len := word.length
-            if (word[len - 1] == !\n) then {
-              len -= 1
-            }
             if (len == 2 or len == 3 or
                 len == 4 or len == 7) then {
               count += 1
