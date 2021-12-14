@@ -4,28 +4,83 @@ str ::= import "string/split.ic"
 file ::= import "file.ic"
 str2 ::= import "string/strip.ic"
 
+IsUniqueLength ::= (len: u64) -> bool {
+  return len == 2 or len == 3 or len == 4 or len == 7
+}
+
+CharToIdx ::= (c: char) -> i64 {
+  return (c as i64) - (!a as i64)
+}
+
+DecodeDigit ::= (wires: []char, histogram: *[8; i64]) -> i64 {
+  // Histogram:
+  // a  b  c  d  e  f  g
+  // 8  16 18 17 4  19 7
+  if (wires.length == 2) then { return 1 }  // cf
+  if (wires.length == 3) then { return 7 }  // acf
+  if (wires.length == 4) then { return 4 }  // bcdf
+  if (wires.length == 7) then { return 8 }  // abcdefg
+  if (wires.length == 5) then {
+    for (0, 5) do [i: i64] {
+      count := (@histogram)[CharToIdx(wires[i])]
+      if (count == 4) then { return 2 }  // acdeg (unique e)
+      if (count == 16) then { return 5 } // abdfg (unique b)
+    }
+    return 3  // acdfg
+  } else if (wires.length == 6) then {
+    has_c := false
+    has_d := false
+    for (0, 6) do [i: i64] {
+      count := (@histogram)[CharToIdx(wires[i])]
+      if (count == 18) then {
+        has_c = true
+      } else if (count == 17) then {
+        has_d = true
+      }
+    }
+    if (has_c and has_d) then { return 9 }  // abcdfg (c and d)
+    if (has_c) then { return 0 }  // abcefg (c and e)
+    if (has_d) then { return 6 }  // abdefg (d and e)
+    return -1 // invalid
+  }
+  return -1  // invalid
+}
+
 Solve ::= (filename: []char) -> () {
-  count := 0
+  part_one := 0
+  part_two := 0
   file.With(filename) open [f: file.File] {
     file.Lines(f) each [line: []char] {
       data := str2.StripSuffix(line, "\n")
       side := 0
+      histogram: [8; i64]
+      factor := 1000
       str.Split2(data, " | ") do [side_str: []char] {
-        if (side == 0) then {
-          side = 1
-        } else {
-          str.Split(side_str, ! ) do [word: []char] {
-            len := word.length
-            if (len == 2 or len == 3 or
-                len == 4 or len == 7) then {
-              count += 1
+        str.Split(side_str, ! ) do [word: []char] {
+          if (side == 0) then {
+            for (0, word.length as i64) do [i: i64] {
+              idx := CharToIdx(word[i])
+              if (word.length == 4) then {
+                histogram[idx] += 11  // magic :)
+              } else {
+                histogram[idx] += 1
+              }
             }
+          } else if (side == 1) then {
+            if (IsUniqueLength(word.length)) then {
+              part_one += 1
+            }
+            digit := DecodeDigit(word, &histogram)
+            part_two += digit * factor
+            factor /= 10
           }
         }
+        side += 1
       }
     }
   }
-  io.Print("Part 1: ", count, !\n)
+  io.Print("Part 1: ", part_one, !\n)
+  io.Print("Part 2: ", part_two, !\n)
 }
 
 io.Print("Test:\n")
