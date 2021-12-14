@@ -5,25 +5,49 @@ vec ::= import "lib/intvec.ic"
 file ::= import "file.ic"
 util ::= import "lib/util.ic"
 
-PartOne ::= (crabs: *vec.intvec) -> i64 {
-  num_crabs := crabs.length as i64
-  max_pos := 0
-  for (0, num_crabs) do [i: i64] {
-    if (crabs'at(i) > max_pos) then {
-      max_pos = crabs'at(i)
-    }
+MoveCostOne ::= (crabs: *vec.intvec, pos: i64) -> i64 {
+  cost := 0
+  for (0, crabs.length as i64) do [i: i64] {
+    cost += util.Abs(pos - crabs'at(i))
   }
-  min_cost := max_pos * num_crabs
-  for (0, max_pos) do [pos: i64] {
-    cost := 0
-    for (0, num_crabs) do [i: i64] {
-      cost += util.Abs(pos - crabs'at(i))
-    }
+  return cost
+}
+
+MoveCostTwo ::= (crabs: *vec.intvec, pos: i64) -> i64 {
+  cost := 0
+  for (0, crabs.length as i64) do [i: i64] {
+    delta := util.Abs(pos - crabs'at(i))
+    cost += (delta * (delta + 1)) / 2
+  }
+  return cost
+}
+
+FindMinCostOne ::= (crabs: *vec.intvec) -> i64 {
+  min_cost := MoveCostOne(crabs, 0)
+  pos := 1
+  while (true) do {
+    cost := MoveCostOne(crabs, pos)
     if (cost < min_cost) then {
       min_cost = cost
     } else if (cost > min_cost) then {
       return min_cost
     }
+    pos += 1
+  }
+  return min_cost
+}
+
+FindMinCostTwo ::= (crabs: *vec.intvec) -> i64 {
+  min_cost := MoveCostTwo(crabs, 0)
+  pos := 1
+  while (true) do {
+    cost := MoveCostTwo(crabs, pos)
+    if (cost < min_cost) then {
+      min_cost = cost
+    } else if (cost > min_cost) then {
+      return min_cost
+    }
+    pos += 1
   }
   return min_cost
 }
@@ -37,7 +61,8 @@ Solve ::= (filename: []char) -> () {
       }
     }
   }
-  io.Print("Part 1: ", PartOne(&crabs), !\n)
+  io.Print("Part 1: ", FindMinCostOne(&crabs), !\n)
+  io.Print("Part 1: ", FindMinCostTwo(&crabs), !\n)
 }
 
 io.Print("Test:\n")
