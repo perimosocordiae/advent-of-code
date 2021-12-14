@@ -1,0 +1,36 @@
+-- ::= import "core.ic"
+io ::= import "io.ic"
+str ::= import "string/split.ic"
+file ::= import "file.ic"
+
+Solve ::= (filename: []char) -> () {
+  count := 0
+  file.With(filename) open [f: file.File] {
+    file.Lines(f) each [line: []char] {
+      side := 0
+      str.Split2(line, " | ") do [side_str: []char] {
+        if (side == 0) then {
+          side = 1
+        } else {
+          str.Split(side_str, ! ) do [word: []char] {
+            len := word.length
+            if (word[len - 1] == !\n) then {
+              len -= 1
+            }
+            if (len == 2 or len == 3 or
+                len == 4 or len == 7) then {
+              count += 1
+            }
+          }
+        }
+      }
+    }
+  }
+  io.Print("Part 1: ", count, !\n)
+}
+
+io.Print("Test:\n")
+Solve("inputs/08.test")
+
+io.Print("Full:\n")
+Solve("inputs/08.full")
