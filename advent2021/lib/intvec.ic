@@ -37,9 +37,7 @@ make ::= (fill: i64, len: u64) -> intvec {
 }
 
 #{export}
-at ::= (self: *intvec, idx: i64) -> i64 {
-  return self._data[idx]
-}
+__index__ ::= (self: *intvec, idx: i64) => self._data[idx]
 
 #{export}
 ref ::= (self: *intvec, idx: i64) -> *i64 {

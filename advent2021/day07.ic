@@ -8,7 +8,7 @@ util ::= import "lib/util.ic"
 MoveCostOne ::= (crabs: *vec.intvec, pos: i64) -> i64 {
   cost := 0
   for (0, crabs.length as i64) do [i: i64] {
-    cost += util.Abs(pos - crabs'at(i))
+    cost += util.Abs(pos - crabs[i])
   }
   return cost
 }
@@ -16,7 +16,7 @@ MoveCostOne ::= (crabs: *vec.intvec, pos: i64) -> i64 {
 MoveCostTwo ::= (crabs: *vec.intvec, pos: i64) -> i64 {
   cost := 0
   for (0, crabs.length as i64) do [i: i64] {
-    delta := util.Abs(pos - crabs'at(i))
+    delta := util.Abs(pos - crabs[i])
     cost += (delta * (delta + 1)) / 2
   }
   return cost

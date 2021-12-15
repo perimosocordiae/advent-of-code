@@ -26,7 +26,7 @@ make ::= (fill: i64, len: u64) -> ring_buffer {
 }
 
 #{export}
-at ::= (self: *ring_buffer, idx: i64) -> i64 {
+__index__ ::= (self: *ring_buffer, idx: i64) -> i64 {
   i := (self._start + idx) % self._length
   return self._data[i]
 }
