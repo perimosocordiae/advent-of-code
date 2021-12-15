@@ -7,8 +7,8 @@ util ::= import "lib/util.ic"
 
 ErrorScore ::= (c: char) -> i64 {
   if (c == !)) then { return 3 }
-  if (c == !}) then { return 57 }
-  if (c == !]) then { return 1197 }
+  if (c == !]) then { return 57 }
+  if (c == !}) then { return 1197 }
   if (c == !>) then { return 25137 }
   return -1
 }
@@ -24,12 +24,10 @@ IsCorrupt ::= (line: []char) -> i64 {
           open_stack'back() == (line[i] as i64)) then {
         open_stack'pop_back()
       } else {
-        // io.Print("Corrupt: ", line)
         return ErrorScore(line[i])
       }
     }
   }
-  io.Print("Valid: ", line)
   return 0
 }
 
