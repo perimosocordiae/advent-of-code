@@ -1,6 +1,7 @@
 -- ::= import "core.ic"
 io ::= import "io.ic"
 str ::= import "string/split.ic"
+vec ::= import "lib/intvec.ic"
 file ::= import "file.ic"
 util ::= import "lib/util.ic"
 
@@ -41,6 +42,47 @@ Solve ::= (filename: []char) -> () {
     }
   }
   io.Print("Part 1: ", sum_risk, !\n)
+
+  // Part 2
+  label := 1
+  for (0, num_rows + 1) do [row: i64] {
+    for (0, num_cols + 1) do [col: i64] {
+      if (grid[row][col] < 9) then {
+        grid[row][col] = label
+        label += 1
+      } else {
+        grid[row][col] = 0
+      }
+    }
+  }
+  // TODO: use a more efficient algorithm for this, see scipy.ndimage.label
+  still_changing := true
+  while (still_changing) do {
+    still_changing = false
+    for (1, num_rows) do [row: i64] {
+      for (1, num_cols) do [col: i64] {
+        if (grid[row][col] != 0) then {
+          max_nbr := util.Max(grid[row - 1][col], grid[row + 1][col],
+                              grid[row][col - 1], grid[row][col + 1])
+          if (max_nbr > grid[row][col]) then {
+            grid[row][col] = max_nbr
+            still_changing = true
+          }
+        }
+      }
+    }
+  }
+  bincount := vec.make(0, label as u64)
+  for (1, num_rows) do [row: i64] {
+    for (1, num_cols) do [col: i64] {
+      if (grid[row][col] != 0) then {
+        @(bincount'ref(grid[row][col])) += 1
+      }
+    }
+  }
+  bincount'sort()
+  result := bincount[label - 1] * bincount[label - 2] * bincount[label - 3]
+  io.Print("Part 2: ", result, !\n)
 }
 
 io.Print("Test:\n")

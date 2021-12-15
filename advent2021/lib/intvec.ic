@@ -63,3 +63,17 @@ append ::= (self: *intvec, val: i64) -> () {
   self._data[self.length] = val
   self.length += 1
 }
+
+// TODO: use a more efficient implementation here
+#{export}
+sort ::= (self: *intvec) -> () {
+  for (0, self.length as i64) do [idx: i64] {
+    for (idx + 1, self.length as i64) do [idx2: i64] {
+      if (self._data[idx] > self._data[idx2]) then {
+        tmp := self._data[idx]
+        self._data[idx] = self._data[idx2]
+        self._data[idx2] = tmp
+      }
+    }
+  }
+}
