@@ -1,0 +1,50 @@
+-- ::= import "core.ic"
+io ::= import "io.ic"
+str ::= import "string/match.ic"
+vec ::= import "lib/intvec.ic"
+file ::= import "file.ic"
+util ::= import "lib/util.ic"
+
+ErrorScore ::= (c: char) -> i64 {
+  if (c == !)) then { return 3 }
+  if (c == !}) then { return 57 }
+  if (c == !]) then { return 1197 }
+  if (c == !>) then { return 25137 }
+  return -1
+}
+
+IsCorrupt ::= (line: []char) -> i64 {
+  open_stack := vec.empty(10)
+  for (0, line.length as i64 - 1) do [i: i64] {
+    idx := str.IndexOf("({[<", line[i])
+    if (idx < 4) then {
+      open_stack'append(")}]>"[idx] as i64)
+    } else {
+      if (open_stack.length > 0 and
+          open_stack'back() == (line[i] as i64)) then {
+        open_stack'pop_back()
+      } else {
+        // io.Print("Corrupt: ", line)
+        return ErrorScore(line[i])
+      }
+    }
+  }
+  io.Print("Valid: ", line)
+  return 0
+}
+
+Solve ::= (filename: []char) -> () {
+  total_score := 0
+  file.With(filename) open [f: file.File] {
+    file.Lines(f) each [line: []char] {
+      total_score += IsCorrupt(line)
+    }
+  }
+  io.Print("Part 1: ", total_score, !\n)
+}
+
+io.Print("Test:\n")
+Solve("inputs/10.test")
+
+io.Print("Full:\n")
+Solve("inputs/10.full")

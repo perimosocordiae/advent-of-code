@@ -50,6 +50,16 @@ as_slice ::= (self: *intvec) -> []i64 {
 }
 
 #{export}
+back ::= (self: *intvec) -> i64 {
+  return self._data[self.length - 1]
+}
+
+#{export}
+pop_back ::= (self: *intvec) -> () {
+  self.length -= 1
+}
+
+#{export}
 append ::= (self: *intvec, val: i64) -> () {
   if (self.length == self._capacity) then {
     self._capacity *= 2
