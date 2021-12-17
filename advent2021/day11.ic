@@ -11,7 +11,7 @@ IncrementIfNonzero ::= (x: *i64) -> () {
   }
 }
 
-Solve ::= (filename: []char) -> () {
+Solve ::= (filename: []char) -> bool {
   grid: [12, 12; i64]
   file.With(filename) open [f: file.File] {
     row := 1
@@ -25,7 +25,7 @@ Solve ::= (filename: []char) -> () {
 
   // Simulate
   total_flashes := 0
-  for (0, 100) do [step: i64] {
+  for (0, 10000) do [step: i64] {
     // All cells increase by 1
     for (1, 11) do [row: i64] {
       for (1, 11) do [col: i64] {
@@ -33,6 +33,7 @@ Solve ::= (filename: []char) -> () {
       }
     }
     // Process flashes (energy > 9)
+    step_flashes := 0
     dirty_bit := true
     while (dirty_bit) do {
       dirty_bit = false
@@ -40,7 +41,7 @@ Solve ::= (filename: []char) -> () {
         for (1, 11) do [col: i64] {
           if (grid[row][col] > 9) then {
             grid[row][col] = 0
-            total_flashes += 1
+            step_flashes += 1
             dirty_bit = true
             IncrementIfNonzero(&grid[row - 1][col - 1])
             IncrementIfNonzero(&grid[row - 1][col])
@@ -54,8 +55,16 @@ Solve ::= (filename: []char) -> () {
         }
       }
     }
+    total_flashes += step_flashes
+    if (step == 99) then {
+      io.Print("Part 1: ", total_flashes, !\n)
+    }
+    if (step_flashes == 100) then {
+      io.Print("Part 2: ", step + 1, !\n)
+      return true
+    }
   }
-  io.Print("Part 1: ", total_flashes, !\n)
+  return false
 }
 
 io.Print("Test:\n")
