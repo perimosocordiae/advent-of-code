@@ -87,3 +87,28 @@ sort ::= (self: *intvec) -> () {
     }
   }
 }
+
+foreach_state ::= struct {
+  _vec: *intvec
+  _idx: i64
+}
+at_end ::= (self: *foreach_state) => self._idx >= self._vec.length as i64
+
+#{export}
+ForEach ::= scope (foreach_state) {
+  enter ::= jump [state: *foreach_state] (v: *intvec) {
+    state._vec = v
+    state._idx = 0
+    goto state'at_end(), done(), do(state._vec[state._idx])
+  }
+
+  do ::= block {
+    before ::= (x: i64) => x
+    after ::= jump [state: *foreach_state] () {
+      state._idx += 1
+    goto state'at_end(), done(), do(state._vec[state._idx])
+    }
+  }
+
+  exit ::= () -> () {}
+}
