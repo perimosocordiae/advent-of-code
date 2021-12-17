@@ -112,3 +112,22 @@ ForEach ::= scope (foreach_state) {
 
   exit ::= () -> () {}
 }
+
+#{export}
+ReverseForEach ::= scope (foreach_state) {
+  enter ::= jump [state: *foreach_state] (v: *intvec) {
+    state._vec = v
+    state._idx = v.length as i64 - 1
+    goto state._idx < 0, done(), do(state._vec[state._idx])
+  }
+
+  do ::= block {
+    before ::= (x: i64) => x
+    after ::= jump [state: *foreach_state] () {
+      state._idx -= 1
+      goto state._idx < 0, done(), do(state._vec[state._idx])
+    }
+  }
+
+  exit ::= () -> () {}
+}

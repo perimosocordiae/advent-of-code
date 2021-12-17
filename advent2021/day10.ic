@@ -43,10 +43,9 @@ ProcessLine ::= (line: []char) -> line_result {
   }
   num_open := open_stack.length as i64
   incomplete_score := 0
-  for (1, num_open + 1) do [i: i64] {
-    ch := open_stack[num_open - i] as i8 as char
+  vec.ReverseForEach(open_stack) do [ch: i64] {
     incomplete_score *= 5
-    incomplete_score += CompletionScore(ch)
+    incomplete_score += CompletionScore(ch as i8 as char)
   }
   return line_result.{ corrupt = 0 \\ incomplete = incomplete_score }
 }
