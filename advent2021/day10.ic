@@ -13,7 +13,20 @@ ErrorScore ::= (c: char) -> i64 {
   return -1
 }
 
-IsCorrupt ::= (line: []char) -> i64 {
+CompletionScore ::= (c: char) -> i64 {
+  if (c == !)) then { return 1 }
+  if (c == !]) then { return 2 }
+  if (c == !}) then { return 3 }
+  if (c == !>) then { return 4 }
+  return -1
+}
+
+line_result ::= struct {
+  corrupt: i64
+  incomplete: i64
+}
+
+ProcessLine ::= (line: []char) -> line_result {
   open_stack := vec.empty(10)
   for (0, line.length as i64 - 1) do [i: i64] {
     idx := str.IndexOf("({[<", line[i])
@@ -24,21 +37,37 @@ IsCorrupt ::= (line: []char) -> i64 {
           open_stack'back() == (line[i] as i64)) then {
         open_stack'pop_back()
       } else {
-        return ErrorScore(line[i])
+        return line_result.{ corrupt = ErrorScore(line[i]) \\ incomplete = 0 }
       }
     }
   }
-  return 0
+  num_open := open_stack.length as i64
+  incomplete_score := 0
+  for (1, num_open + 1) do [i: i64] {
+    ch := open_stack[num_open - i] as i8 as char
+    incomplete_score *= 5
+    incomplete_score += CompletionScore(ch)
+  }
+  return line_result.{ corrupt = 0 \\ incomplete = incomplete_score }
 }
 
 Solve ::= (filename: []char) -> () {
-  total_score := 0
+  corrupted_score := 0
+  incomplete_scores := vec.empty(5)
   file.With(filename) open [f: file.File] {
     file.Lines(f) each [line: []char] {
-      total_score += IsCorrupt(line)
+      result := ProcessLine(line)
+      corrupted_score += result.corrupt
+      if (result.incomplete > 0) then {
+        incomplete_scores'append(result.incomplete)
+      }
     }
   }
-  io.Print("Part 1: ", total_score, !\n)
+  io.Print("Part 1: ", corrupted_score, !\n)
+
+  incomplete_scores'sort()
+  mid := incomplete_scores.length as i64 / 2
+  io.Print("Part 2: ", incomplete_scores[mid], !\n)
 }
 
 io.Print("Test:\n")
