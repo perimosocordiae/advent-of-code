@@ -1,0 +1,65 @@
+-- ::= import "core.ic"
+io ::= import "io.ic"
+str ::= import "string/match.ic"
+vec ::= import "lib/intvec.ic"
+file ::= import "file.ic"
+util ::= import "lib/util.ic"
+
+IncrementIfNonzero ::= (x: *i64) -> () {
+  if (@x != 0) then {
+    @x += 1
+  }
+}
+
+Solve ::= (filename: []char) -> () {
+  grid: [12, 12; i64]
+  file.With(filename) open [f: file.File] {
+    row := 1
+    file.Lines(f) each [line: []char] {
+      for (1, 11) do [col: i64] {
+        grid[row][col] = util.ParseInt64(line[col - 1])
+      }
+      row += 1
+    }
+  }
+
+  // Simulate
+  total_flashes := 0
+  for (0, 100) do [step: i64] {
+    // All cells increase by 1
+    for (1, 11) do [row: i64] {
+      for (1, 11) do [col: i64] {
+        grid[row][col] += 1
+      }
+    }
+    // Process flashes (energy > 9)
+    dirty_bit := true
+    while (dirty_bit) do {
+      dirty_bit = false
+      for (1, 11) do [row: i64] {
+        for (1, 11) do [col: i64] {
+          if (grid[row][col] > 9) then {
+            grid[row][col] = 0
+            total_flashes += 1
+            dirty_bit = true
+            IncrementIfNonzero(&grid[row - 1][col - 1])
+            IncrementIfNonzero(&grid[row - 1][col])
+            IncrementIfNonzero(&grid[row - 1][col + 1])
+            IncrementIfNonzero(&grid[row][col - 1])
+            IncrementIfNonzero(&grid[row][col + 1])
+            IncrementIfNonzero(&grid[row + 1][col - 1])
+            IncrementIfNonzero(&grid[row + 1][col])
+            IncrementIfNonzero(&grid[row + 1][col + 1])
+          }
+        }
+      }
+    }
+  }
+  io.Print("Part 1: ", total_flashes, !\n)
+}
+
+io.Print("Test:\n")
+Solve("inputs/11.test")
+
+io.Print("Full:\n")
+Solve("inputs/11.full")
