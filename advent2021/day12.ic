@@ -1,0 +1,51 @@
+-- ::= import "core.ic"
+io ::= import "io.ic"
+str ::= import "string/split.ic"
+vec ::= import "lib/intvec.ic"
+file ::= import "file.ic"
+util ::= import "lib/util.ic"
+strip ::= import "string/strip.ic"
+match ::= import "string/match.ic"
+string ::= import "string.ic"
+
+Solve ::= (filename: []char) -> () {
+  buffer: [100; string.string]
+  buf_len := 0
+  adj_matrix: [100, 100; bool]
+  file.With(filename) open [f: file.File] {
+    file.Lines(f) each [line: []char] {
+      tmp := strip.StripSuffix(line, "\n")
+      edge: [2; i64] = [-1, -1]
+      edge_idx := 0
+      str.Split(tmp, !-) do [node: []char] {
+        for (0, buf_len) do [idx: i64] {
+          if (match.Equals(node, buffer[idx]'view())) then {
+            edge[edge_idx] = idx
+            // break
+          }
+        }
+        if (edge[edge_idx] == -1) then {
+          // add this node to the buffer
+          // TODO
+          // n := string.make(node)
+          // io.Print(node, !\n)
+        }
+        edge_idx += 1
+      }
+      // TODO: add edge to the adjacency matrix
+    }
+  }
+
+}
+
+io.Print("Test 1:\n")
+Solve("inputs/12.test1")
+
+// io.Print("Test 2:\n")
+// Solve("inputs/12.test2")
+
+// io.Print("Test 3:\n")
+// Solve("inputs/12.test3")
+
+// io.Print("Full:\n")
+// Solve("inputs/12.full")
