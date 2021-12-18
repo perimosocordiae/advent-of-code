@@ -8,44 +8,72 @@ strip ::= import "string/strip.ic"
 match ::= import "string/match.ic"
 string ::= import "string.ic"
 
+MAX_NUM_NODES ::= 12
+
+CountUniquePaths ::= (
+    node_ids: [](string.string),
+    adj_matrix: *[MAX_NUM_NODES, MAX_NUM_NODES; bool]) -> i64 {
+  num_nodes := node_ids.length as i64
+  // Print the adjacency matrix
+  for (0, num_nodes) do [i: i64] {
+    for (0, num_nodes) do [j: i64] {
+      if ((@adj_matrix)[i][j]) then {
+        io.Print(!X)
+      } else {
+        io.Print(!_)
+      }
+    }
+    io.Print(!\n)
+  }
+  // Print the buffer
+  for (0, num_nodes) do [i: i64] {
+    io.Print(i, ": ", node_ids[i]'view(), !\n)
+  }
+  return 0
+}
+
+
 Solve ::= (filename: []char) -> () {
-  buffer: [100; string.string]
+  buffer: [MAX_NUM_NODES; string.string]
   buf_len := 0
-  adj_matrix: [100, 100; bool]
+  adj_matrix: [MAX_NUM_NODES, MAX_NUM_NODES; bool]
   file.With(filename) open [f: file.File] {
     file.Lines(f) each [line: []char] {
       tmp := strip.StripSuffix(line, "\n")
-      edge: [2; i64] = [-1, -1]
+      edge := [-1, -1]
       edge_idx := 0
       str.Split(tmp, !-) do [node: []char] {
         for (0, buf_len) do [idx: i64] {
           if (match.Equals(node, buffer[idx]'view())) then {
             edge[edge_idx] = idx
-            // break
+            // break out of the loop here, ideally
           }
         }
         if (edge[edge_idx] == -1) then {
-          // add this node to the buffer
-          // TODO
-          // n := string.make(node)
-          // io.Print(node, !\n)
+          // new node, add it to the buffer
+          buffer[buf_len] = string.make(node)
+          edge[edge_idx] = buf_len
+          buf_len += 1
         }
         edge_idx += 1
       }
-      // TODO: add edge to the adjacency matrix
+      // add undirected edge to the adjacency matrix
+      adj_matrix[edge[0]][edge[1]] = true
+      adj_matrix[edge[1]][edge[0]] = true
     }
   }
-
+  node_ids := slice(&buffer[0], buf_len as u64)
+  io.Print("Part 1: ", CountUniquePaths(node_ids, &adj_matrix), !\n)
 }
 
 io.Print("Test 1:\n")
 Solve("inputs/12.test1")
 
-// io.Print("Test 2:\n")
-// Solve("inputs/12.test2")
+io.Print("Test 2:\n")
+Solve("inputs/12.test2")
 
-// io.Print("Test 3:\n")
-// Solve("inputs/12.test3")
+io.Print("Test 3:\n")
+Solve("inputs/12.test3")
 
-// io.Print("Full:\n")
-// Solve("inputs/12.full")
+io.Print("Full:\n")
+Solve("inputs/12.full")
