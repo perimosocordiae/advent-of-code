@@ -12,7 +12,7 @@ ParseInt64 ::= (c: char) -> i64 {
 
 #{export}
 Abs ::= (x: i64) -> i64 {
-  if (x >= 0) then {
+  if (x >= 0) {
     return x
   } else {
     return -x
@@ -21,7 +21,7 @@ Abs ::= (x: i64) -> i64 {
 
 #{export}
 Max ::= (x: i64, y: i64) -> i64 {
-  if (x >= y) then {
+  if (x >= y) {
     return x
   } else {
     return y

@@ -61,7 +61,7 @@ pop_back ::= (self: *intvec) -> () {
 
 #{export}
 append ::= (self: *intvec, val: i64) -> () {
-  if (self.length == self._capacity) then {
+  if (self.length == self._capacity) {
     self._capacity *= 2
     new_buffer := memory.allocate(i64, self._capacity)
     for (0, self.length as i64) do [idx: i64] {
@@ -79,7 +79,7 @@ append ::= (self: *intvec, val: i64) -> () {
 sort ::= (self: *intvec) -> () {
   for (0, self.length as i64) do [idx: i64] {
     for (idx + 1, self.length as i64) do [idx2: i64] {
-      if (self._data[idx] > self._data[idx2]) then {
+      if (self._data[idx] > self._data[idx2]) {
         tmp := self._data[idx]
         self._data[idx] = self._data[idx2]
         self._data[idx2] = tmp
@@ -88,46 +88,22 @@ sort ::= (self: *intvec) -> () {
   }
 }
 
-foreach_state ::= struct {
-  _vec: *intvec
-  _idx: i64
-}
-at_end ::= (self: *foreach_state) => self._idx >= self._vec.length as i64
-
 #{export}
-ForEach ::= scope (foreach_state) {
-  enter ::= jump [state: *foreach_state] (v: *intvec) {
-    state._vec = v
-    state._idx = 0
-    goto state'at_end(), done(), do(state._vec[state._idx])
+ForEach ::= scope [ctx] (v: *intvec) {
+  idx: i64
+  len := v.length as i64
+  while (idx < len) {
+    v[idx] >> ctx.do
+    idx += 1
   }
-
-  do ::= block {
-    before ::= (x: i64) => x
-    after ::= jump [state: *foreach_state] () {
-      state._idx += 1
-    goto state'at_end(), done(), do(state._vec[state._idx])
-    }
-  }
-
-  exit ::= () -> () {}
 }
 
 #{export}
-ReverseForEach ::= scope (foreach_state) {
-  enter ::= jump [state: *foreach_state] (v: *intvec) {
-    state._vec = v
-    state._idx = v.length as i64 - 1
-    goto state._idx < 0, done(), do(state._vec[state._idx])
+ReverseForEach ::= scope [ctx] (v: *intvec) {
+  idx := v.length as i64 - 1
+  while (idx >= 0) {
+    v[idx] >> ctx.do
+    idx -= 1
   }
-
-  do ::= block {
-    before ::= (x: i64) => x
-    after ::= jump [state: *foreach_state] () {
-      state._idx -= 1
-      goto state._idx < 0, done(), do(state._vec[state._idx])
-    }
-  }
-
-  exit ::= () -> () {}
 }
+

@@ -9,7 +9,7 @@ CountIncreases ::= (depths: []i64) -> i64 {
   prev := depths[0]
   for (1, depths.length as i64) do [i: i64] {
     d := depths[i]
-    if (d > prev) then {
+    if (d > prev) {
       num_increases += 1
     }
     prev = d
