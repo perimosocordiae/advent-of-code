@@ -6,18 +6,18 @@ file ::= import "file.ic"
 util ::= import "lib/util.ic"
 
 ErrorScore ::= (c: char) -> i64 {
-  if (c == !)) then { return 3 }
-  if (c == !]) then { return 57 }
-  if (c == !}) then { return 1197 }
-  if (c == !>) then { return 25137 }
+  if (c == !)) { return 3 }
+  if (c == !]) { return 57 }
+  if (c == !}) { return 1197 }
+  if (c == !>) { return 25137 }
   return -1
 }
 
 CompletionScore ::= (c: char) -> i64 {
-  if (c == !)) then { return 1 }
-  if (c == !]) then { return 2 }
-  if (c == !}) then { return 3 }
-  if (c == !>) then { return 4 }
+  if (c == !)) { return 1 }
+  if (c == !]) { return 2 }
+  if (c == !}) { return 3 }
+  if (c == !>) { return 4 }
   return -1
 }
 
@@ -30,11 +30,11 @@ ProcessLine ::= (line: []char) -> line_result {
   open_stack := vec.empty(10)
   for (0, line.length as i64 - 1) do [i: i64] {
     idx := str.IndexOf("({[<", line[i])
-    if (idx < 4) then {
+    if (idx < 4) {
       open_stack'append(")}]>"[idx] as i64)
     } else {
       if (open_stack.length > 0 and
-          open_stack'back() == (line[i] as i64)) then {
+          open_stack'back() == (line[i] as i64)) {
         open_stack'pop_back()
       } else {
         return line_result.{ corrupt = ErrorScore(line[i]) \\ incomplete = 0 }
@@ -57,7 +57,7 @@ Solve ::= (filename: []char) -> () {
     file.Lines(f) each [line: []char] {
       result := ProcessLine(line)
       corrupted_score += result.corrupt
-      if (result.incomplete > 0) then {
+      if (result.incomplete > 0) {
         incomplete_scores'append(result.incomplete)
       }
     }

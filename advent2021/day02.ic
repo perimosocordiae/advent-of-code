@@ -15,7 +15,7 @@ PartOne ::= (commands: []command) -> i64 {
   y_pos: i64 = 0
   for (0, commands.length as i64) do [i: i64] {
     ci := commands[i]
-    if (ci.direction) then {
+    if (ci.direction) {
       y_pos += ci.amount
     } else {
       x_pos += ci.amount
@@ -30,7 +30,7 @@ PartTwo ::= (commands: []command) -> i64 {
   aim: i64 = 0
   for (0, commands.length as i64) do [i: i64] {
     ci := commands[i]
-    if (ci.direction) then {
+    if (ci.direction) {
       aim += ci.amount
     } else {
       x_pos += ci.amount
@@ -45,12 +45,12 @@ Solve ::= (filename: []char) -> () {
   idx: u64
   file.With(filename) open [f: file.File] {
     file.Lines(f) each [line: []char] {
-      if (line[0] == !f) then {
+      if (line[0] == !f) {
         // buffer[idx].direction = heading.HORIZONTAL
         buffer[idx].amount = util.ParseInt64(slice(&line[8], line.length))
       } else {
         buffer[idx].direction = true // TODO: use heading.VERTICAL
-        if (line[0] == !u) then {
+        if (line[0] == !u) {
           buffer[idx].amount = -util.ParseInt64(slice(&line[3], line.length))
         } else {
           buffer[idx].amount = util.ParseInt64(slice(&line[5], line.length))
@@ -73,7 +73,7 @@ Solve ::= (filename: []char) -> () {
   aim: i64 = 0
   for (0, idx as i64) do [i: i64] {
     ci := buffer[i]
-    if (ci.direction) then {
+    if (ci.direction) {
       aim += ci.amount
     } else {
       x_pos += ci.amount

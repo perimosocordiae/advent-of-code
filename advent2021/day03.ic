@@ -15,7 +15,7 @@ Solve ::= (path: []char) -> () {
       num_rows += 1
       num_cols = line.length as i64 - 1
       for (0, num_cols) do [i: i64] {
-        if (line[i] == !1) then {
+        if (line[i] == !1) {
           buffer[num_rows][i] = true
         }
       }
@@ -26,7 +26,7 @@ Solve ::= (path: []char) -> () {
   counts: [MAX_COLS; i64]
   for (0, num_rows) do [i: i64] {
     for (0, num_cols) do [j: i64] {
-      if (buffer[i][j]) then {
+      if (buffer[i][j]) {
         counts[j] += 1
       }
     }
@@ -38,7 +38,7 @@ Solve ::= (path: []char) -> () {
   for (0, num_cols) do [i: i64] {
     idx := num_cols - i - 1
     thresh := (num_rows as f64) / 2.0
-    if (counts[idx] as f64 >= thresh) then {
+    if (counts[idx] as f64 >= thresh) {
       gamma += factor
     } else {
       epsilon += factor
@@ -51,7 +51,7 @@ Solve ::= (path: []char) -> () {
   for (0, num_cols) do [j: i64] {
     col_count: i64 = 0
     for (0, num_rows) do [i: i64] {
-      if (buffer[i][j]) then {
+      if (buffer[i][j]) {
         col_count += 1
       }
     }

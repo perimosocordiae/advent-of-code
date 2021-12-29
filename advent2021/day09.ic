@@ -36,7 +36,7 @@ Solve ::= (filename: []char) -> () {
     for (1, num_cols) do [col: i64] {
       x := grid[row][col]
       if (x < grid[row - 1][col] and x < grid[row + 1][col] and
-          x < grid[row][col - 1] and x < grid[row][col + 1]) then {
+          x < grid[row][col - 1] and x < grid[row][col + 1]) {
         sum_risk += (x + 1)
       }
     }
@@ -47,7 +47,7 @@ Solve ::= (filename: []char) -> () {
   label := 1
   for (0, num_rows + 1) do [row: i64] {
     for (0, num_cols + 1) do [col: i64] {
-      if (grid[row][col] < 9) then {
+      if (grid[row][col] < 9) {
         grid[row][col] = label
         label += 1
       } else {
@@ -57,14 +57,14 @@ Solve ::= (filename: []char) -> () {
   }
   // TODO: use a more efficient algorithm for this, see scipy.ndimage.label
   still_changing := true
-  while (still_changing) do {
+  while (still_changing) {
     still_changing = false
     for (1, num_rows) do [row: i64] {
       for (1, num_cols) do [col: i64] {
-        if (grid[row][col] != 0) then {
+        if (grid[row][col] != 0) {
           max_nbr := util.Max(grid[row - 1][col], grid[row + 1][col],
                               grid[row][col - 1], grid[row][col + 1])
-          if (max_nbr > grid[row][col]) then {
+          if (max_nbr > grid[row][col]) {
             grid[row][col] = max_nbr
             still_changing = true
           }
@@ -75,7 +75,7 @@ Solve ::= (filename: []char) -> () {
   bincount := vec.make(0, label as u64)
   for (1, num_rows) do [row: i64] {
     for (1, num_cols) do [col: i64] {
-      if (grid[row][col] != 0) then {
+      if (grid[row][col] != 0) {
         @(bincount'ref(grid[row][col])) += 1
       }
     }

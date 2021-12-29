@@ -17,7 +17,7 @@ CountUniquePaths ::= (
   // Print the adjacency matrix
   for (0, num_nodes) do [i: i64] {
     for (0, num_nodes) do [j: i64] {
-      if ((@adj_matrix)[i][j]) then {
+      if ((@adj_matrix)[i][j]) {
         io.Print(!X)
       } else {
         io.Print(!_)
@@ -44,12 +44,12 @@ Solve ::= (filename: []char) -> () {
       edge_idx := 0
       str.Split(tmp, !-) do [node: []char] {
         for (0, buf_len) do [idx: i64] {
-          if (match.Equals(node, buffer[idx]'view())) then {
+          if (match.Equals(node, buffer[idx]'view())) {
             edge[edge_idx] = idx
             // break out of the loop here, ideally
           }
         }
-        if (edge[edge_idx] == -1) then {
+        if (edge[edge_idx] == -1) {
           // new node, add it to the buffer
           buffer[buf_len] = string.make(node)
           edge[edge_idx] = buf_len

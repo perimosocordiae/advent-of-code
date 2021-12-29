@@ -25,11 +25,11 @@ MoveCostTwo ::= (crabs: *vec.intvec, pos: i64) -> i64 {
 FindMinCostOne ::= (crabs: *vec.intvec) -> i64 {
   min_cost := MoveCostOne(crabs, 0)
   pos := 1
-  while (true) do {
+  while (true) {
     cost := MoveCostOne(crabs, pos)
-    if (cost < min_cost) then {
+    if (cost < min_cost) {
       min_cost = cost
-    } else if (cost > min_cost) then {
+    } else if (cost > min_cost) {
       return min_cost
     }
     pos += 1
@@ -40,11 +40,11 @@ FindMinCostOne ::= (crabs: *vec.intvec) -> i64 {
 FindMinCostTwo ::= (crabs: *vec.intvec) -> i64 {
   min_cost := MoveCostTwo(crabs, 0)
   pos := 1
-  while (true) do {
+  while (true) {
     cost := MoveCostTwo(crabs, pos)
-    if (cost < min_cost) then {
+    if (cost < min_cost) {
       min_cost = cost
-    } else if (cost > min_cost) then {
+    } else if (cost > min_cost) {
       return min_cost
     }
     pos += 1

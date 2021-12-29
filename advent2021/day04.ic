@@ -9,14 +9,14 @@ IsWinner ::= (board: [5, 5; i64]) -> bool {
     full_row := true
     full_col := true
     for (0, 5) do [j: i64] {
-      if (board[i][j] != -1) then {
+      if (board[i][j] != -1) {
         full_row = false
       }
-      if (board[j][i] != -1) then {
+      if (board[j][i] != -1) {
         full_col = false
       }
     }
-    if (full_row or full_col) then {
+    if (full_row or full_col) {
       return true
     }
   }
@@ -27,7 +27,7 @@ SumUnmarked ::= (board: [5, 5; i64]) -> i64 {
   sum: i64 = 0
   for (0, 5) do [j: i64] {
     for (0, 5) do [k: i64] {
-      if (board[j][k] > 0) then {
+      if (board[j][k] > 0) {
         sum += board[j][k]
       }
     }
@@ -47,13 +47,13 @@ Solve ::= (path: []char) -> () {
 
   file.With(path) open [f: file.File] {
     file.Lines(f) each [line: []char] {
-      if (num_idx == 0) then {
+      if (num_idx == 0) {
         // Parse comma-separated integers into `nums`.
         str.Split (line, !,) do [str_num: []char] {
           nums[num_idx] = util.ParseInt64(str_num)
           num_idx += 1
         }
-      } else if (line[0] == !\n) then {
+      } else if (line[0] == !\n) {
         // This is a blank line, advance the board index.
         board_idx += 1
         row = 0
@@ -74,17 +74,17 @@ Solve ::= (path: []char) -> () {
   for (0, num_idx) do [nidx: i64] {
     x := nums[nidx]
     for (0, board_idx) do [i: i64] {
-      if (not done_boards[i]) then {
+      if (not done_boards[i]) {
         for (0, 5) do [j: i64] {
           for (0, 5) do [k: i64] {
-            if (boards[i][j][k] == x) then {
+            if (boards[i][j][k] == x) {
               boards[i][j][k] = -1
             }
           }
         }
-        if (IsWinner(boards[i])) then {
+        if (IsWinner(boards[i])) {
           done_boards[i] = true
-          if (is_first_winner) then {
+          if (is_first_winner) {
             answer := SumUnmarked(boards[i]) * x
             io.Print("Part 1: ", answer, !\n)
             is_first_winner = false
@@ -92,11 +92,11 @@ Solve ::= (path: []char) -> () {
             // check if this is the last board to finish.
             all_done := true
             for (0, board_idx) do [b: i64] {
-              if (not done_boards[b]) then {
+              if (not done_boards[b]) {
                 all_done = false
               }
             }
-            if (all_done) then {
+            if (all_done) {
               answer := SumUnmarked(boards[i]) * x
               io.Print("Part 2: ", answer, !\n)
             }
