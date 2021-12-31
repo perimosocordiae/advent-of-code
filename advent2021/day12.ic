@@ -14,6 +14,21 @@ CountUniquePaths ::= (
     node_ids: [](string.string),
     adj_matrix: *[MAX_NUM_NODES, MAX_NUM_NODES; bool]) -> i64 {
   num_nodes := node_ids.length as i64
+  // Find the start and end node indices, and keep track of which nodes can
+  // be revisited.
+  start: i64
+  end: i64
+  can_revisit: [MAX_NUM_NODES; bool]
+  for (0, num_nodes) do [i: i64] {
+    if (match.Equals(node_ids[i]'view(), "start")) {
+      start = i
+    } else if (match.Equals(node_ids[i]'view(), "end")) {
+      end = i
+    } else {
+      ch: char = @(node_ids[i]'at(0))
+      can_revisit[i] = ch >= !A and ch <= !Z
+    }
+  }
   // Print the adjacency matrix
   for (0, num_nodes) do [i: i64] {
     for (0, num_nodes) do [j: i64] {
@@ -25,9 +40,14 @@ CountUniquePaths ::= (
     }
     io.Print(!\n)
   }
-  // Print the buffer
+  // Print the node ids
   for (0, num_nodes) do [i: i64] {
-    io.Print(i, ": ", node_ids[i]'view(), !\n)
+    io.Print(i, ": ", node_ids[i]'view())
+    if (can_revisit[i]) {
+      io.Print(" (big)\n")
+    } else {
+      io.Print(!\n)
+    }
   }
   return 0
 }
