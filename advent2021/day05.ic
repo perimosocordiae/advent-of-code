@@ -13,7 +13,7 @@ Solve ::= (filename: []char) -> () {
   file.With(filename) open [f: file.File] {
     file.Lines(f) each [line: []char] {
       j := 0
-      str.Split2 (line, " -> ") do [s: []char] {
+      str.Split (line, " -> ") do [s: []char] {
         str.Split (s, !,) do [x: []char] {
           buffer[idx][j] = util.ParseInt64(x)
           j += 1
