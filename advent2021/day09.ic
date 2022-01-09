@@ -55,6 +55,9 @@ Solve ::= (filename: []char) -> () {
       }
     }
   }
+  // XXX: Somehow, putting this line here works fine, but when it appears below
+  // as commented out on line 78, we get a segfault every time.
+  bincount := vec.make(0, label as u64)
   // TODO: use a more efficient algorithm for this, see scipy.ndimage.label
   still_changing := true
   while (still_changing) {
@@ -72,7 +75,7 @@ Solve ::= (filename: []char) -> () {
       }
     }
   }
-  bincount := vec.make(0, label as u64)
+  // bincount := vec.make(0, label as u64)
   for (1, num_rows) do [row: i64] {
     for (1, num_cols) do [col: i64] {
       if (grid[row][col] != 0) {
