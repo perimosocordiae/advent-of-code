@@ -26,19 +26,19 @@ CountUniquePaths ::= (
       end = i
     } else {
       ch := @(node_ids[i]'at(0)) as i8
-      can_revisit[i] = ch >= (!A as i8) and ch <= (!Z as i8)
+      can_revisit[i] = ch >= (!'A' as i8) and ch <= (!'Z' as i8)
     }
   }
   // Print the adjacency matrix
   for (0, num_nodes) do [i: i64] {
     for (0, num_nodes) do [j: i64] {
       if ((@adj_matrix)[i][j]) {
-        io.Print(!X)
+        io.Print(!'X')
       } else {
-        io.Print(!_)
+        io.Print(!'_')
       }
     }
-    io.Print(!\n)
+    io.Print(!'\n')
   }
   // Print the node ids
   for (0, num_nodes) do [i: i64] {
@@ -46,7 +46,7 @@ CountUniquePaths ::= (
     if (can_revisit[i]) {
       io.Print(" (big)\n")
     } else {
-      io.Print(!\n)
+      io.Print(!'\n')
     }
   }
   return 0
@@ -62,7 +62,7 @@ Solve ::= (filename: []char) -> () {
       tmp := strip.StripSuffix(line, "\n")
       edge := [-1, -1]
       edge_idx := 0
-      str.Split(tmp, !-) do [node: []char] {
+      str.Split(tmp, !'-') do [node: []char] {
         for (0, buf_len) do [idx: i64] {
           if (match.Equals(node, buffer[idx]'view())) {
             edge[edge_idx] = idx
@@ -83,7 +83,7 @@ Solve ::= (filename: []char) -> () {
     }
   }
   node_ids := slice(&buffer[0], buf_len as u64)
-  io.Print("Part 1: ", CountUniquePaths(node_ids, &adj_matrix), !\n)
+  io.Print("Part 1: ", CountUniquePaths(node_ids, &adj_matrix), !'\n')
 }
 
 io.Print("Test 1:\n")

@@ -57,10 +57,10 @@ Solve ::= (filename: []char) -> bool {
     }
     total_flashes += step_flashes
     if (step == 99) {
-      io.Print("Part 1: ", total_flashes, !\n)
+      io.Print("Part 1: ", total_flashes, !'\n')
     }
     if (step_flashes == 100) {
-      io.Print("Part 2: ", step + 1, !\n)
+      io.Print("Part 2: ", step + 1, !'\n')
       return true
     }
   }

@@ -38,8 +38,8 @@ Solve ::= (filename: []char) -> () {
     }
   }
   values := slice(&buffer[0], idx)
-  io.Print("Part 1: ", CountIncreases(values), !\n)
-  io.Print("Part 2: ", CountWindowIncreases(values, 3), !\n)
+  io.Print("Part 1: ", CountIncreases(values), !'\n')
+  io.Print("Part 2: ", CountWindowIncreases(values, 3), !'\n')
 }
 
 io.Print("Test:\n")

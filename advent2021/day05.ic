@@ -14,7 +14,7 @@ Solve ::= (filename: []char) -> () {
     file.Lines(f) each [line: []char] {
       j := 0
       str.Split (line, " -> ") do [s: []char] {
-        str.Split (s, !,) do [x: []char] {
+        str.Split (s, !',') do [x: []char] {
           buffer[idx][j] = util.ParseInt64(x)
           j += 1
         }
@@ -61,7 +61,7 @@ Solve ::= (filename: []char) -> () {
       }
     }
   }
-  io.Print("Part 1: ", count, !\n)
+  io.Print("Part 1: ", count, !'\n')
 
   // Now handle diagonals as well
   for (0, idx) do [i: i64] {
@@ -105,7 +105,7 @@ Solve ::= (filename: []char) -> () {
       }
     }
   }
-  io.Print("Part 2: ", count, !\n)
+  io.Print("Part 2: ", count, !'\n')
 }
 
 io.Print("Test:\n")

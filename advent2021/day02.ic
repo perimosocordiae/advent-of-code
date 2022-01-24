@@ -45,12 +45,12 @@ Solve ::= (filename: []char) -> () {
   idx: u64
   file.With(filename) open [f: file.File] {
     file.Lines(f) each [line: []char] {
-      if (line[0] == !f) {
+      if (line[0] == !'f') {
         // buffer[idx].direction = heading.HORIZONTAL
         buffer[idx].amount = util.ParseInt64(slice(&line[8], line.length))
       } else {
         buffer[idx].direction = true // TODO: use heading.VERTICAL
-        if (line[0] == !u) {
+        if (line[0] == !'u') {
           buffer[idx].amount = -util.ParseInt64(slice(&line[3], line.length))
         } else {
           buffer[idx].amount = util.ParseInt64(slice(&line[5], line.length))
@@ -60,8 +60,8 @@ Solve ::= (filename: []char) -> () {
     }
   }
   values := slice(&buffer[0], idx)
-  io.Print("Part 1: ", PartOne(values), !\n)
-  // io.Print("Part 2: ", PartTwo(values), !\n)
+  io.Print("Part 1: ", PartOne(values), !'\n')
+  // io.Print("Part 2: ", PartTwo(values), !'\n')
   
   // XXX: These are needed to prevent a type verification error in PartOne???
   // x_pos: i64 = 0
@@ -80,7 +80,7 @@ Solve ::= (filename: []char) -> () {
       y_pos += aim * ci.amount
     }
   }
-  io.Print("Part 2: ", x_pos * y_pos, !\n)
+  io.Print("Part 2: ", x_pos * y_pos, !'\n')
 }
 
 io.Print("Test:\n")

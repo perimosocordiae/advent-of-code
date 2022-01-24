@@ -9,7 +9,7 @@ IsUniqueLength ::= (len: u64) -> bool {
 }
 
 CharToIdx ::= (c: char) -> i64 {
-  return (c as i64) - (!a as i64)
+  return (c as i64) - (!'a' as i64)
 }
 
 DecodeDigit ::= (wires: []char, histogram: *[8; i64]) -> i64 {
@@ -56,7 +56,7 @@ Solve ::= (filename: []char) -> () {
       histogram: [8; i64]
       factor := 1000
       str.Split(data, " | ") do [side_str: []char] {
-        str.Split(side_str, ! ) do [word: []char] {
+        str.Split(side_str, !' ') do [word: []char] {
           if (side == 0) {
             for (0, word.length as i64) do [i: i64] {
               idx := CharToIdx(word[i])
@@ -79,8 +79,8 @@ Solve ::= (filename: []char) -> () {
       }
     }
   }
-  io.Print("Part 1: ", part_one, !\n)
-  io.Print("Part 2: ", part_two, !\n)
+  io.Print("Part 1: ", part_one, !'\n')
+  io.Print("Part 2: ", part_two, !'\n')
 }
 
 io.Print("Test:\n")

@@ -9,7 +9,7 @@ Solve ::= (filename: []char) -> () {
   counts := ring_buffer.make(0, 9)
   file.With(filename) open [f: file.File] {
     file.Lines(f) each [line: []char] {
-      str.Split(line, !,) do [num_str: []char] {
+      str.Split(line, !',') do [num_str: []char] {
         num := util.ParseInt64(num_str)
         @(counts'ref(num)) += 1
       }
@@ -19,13 +19,13 @@ Solve ::= (filename: []char) -> () {
     new_fish := counts'pop()
     @(counts'ref(6)) += new_fish
   }
-  io.Print("Part 1: ", counts'sum(), !\n)
+  io.Print("Part 1: ", counts'sum(), !'\n')
 
   for (80, 256) do [day: i64] {
     new_fish := counts'pop()
     @(counts'ref(6)) += new_fish
   }
-  io.Print("Part 2: ", counts'sum(), !\n)
+  io.Print("Part 2: ", counts'sum(), !'\n')
 }
 
 io.Print("Test:\n")

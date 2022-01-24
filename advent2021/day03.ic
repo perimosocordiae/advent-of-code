@@ -15,7 +15,7 @@ Solve ::= (path: []char) -> () {
       num_rows += 1
       num_cols = line.length as i64 - 1
       for (0, num_cols) do [i: i64] {
-        if (line[i] == !1) {
+        if (line[i] == !'1') {
           buffer[num_rows][i] = true
         }
       }
@@ -45,7 +45,7 @@ Solve ::= (path: []char) -> () {
     }
     factor += factor
   }
-  io.Print("Part 1: ", gamma * epsilon, !\n)
+  io.Print("Part 1: ", gamma * epsilon, !'\n')
 
   // Part 2: iteratively drop rows
   for (0, num_cols) do [j: i64] {

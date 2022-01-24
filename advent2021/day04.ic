@@ -49,11 +49,11 @@ Solve ::= (path: []char) -> () {
     file.Lines(f) each [line: []char] {
       if (num_idx == 0) {
         // Parse comma-separated integers into `nums`.
-        str.Split (line, !,) do [str_num: []char] {
+        str.Split (line, !',') do [str_num: []char] {
           nums[num_idx] = util.ParseInt64(str_num)
           num_idx += 1
         }
-      } else if (line[0] == !\n) {
+      } else if (line[0] == !'\n') {
         // This is a blank line, advance the board index.
         board_idx += 1
         row = 0
@@ -86,7 +86,7 @@ Solve ::= (path: []char) -> () {
           done_boards[i] = true
           if (is_first_winner) {
             answer := SumUnmarked(boards[i]) * x
-            io.Print("Part 1: ", answer, !\n)
+            io.Print("Part 1: ", answer, !'\n')
             is_first_winner = false
           } else {
             // check if this is the last board to finish.
@@ -98,7 +98,7 @@ Solve ::= (path: []char) -> () {
             }
             if (all_done) {
               answer := SumUnmarked(boards[i]) * x
-              io.Print("Part 2: ", answer, !\n)
+              io.Print("Part 2: ", answer, !'\n')
             }
           }
         }

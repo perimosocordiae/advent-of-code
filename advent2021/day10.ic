@@ -6,18 +6,18 @@ file ::= import "file.ic"
 util ::= import "lib/util.ic"
 
 ErrorScore ::= (c: char) -> i64 {
-  if (c == !)) { return 3 }
-  if (c == !]) { return 57 }
-  if (c == !}) { return 1197 }
-  if (c == !>) { return 25137 }
+  if (c == !')') { return 3 }
+  if (c == !']') { return 57 }
+  if (c == !'}') { return 1197 }
+  if (c == !'>') { return 25137 }
   return -1
 }
 
 CompletionScore ::= (c: char) -> i64 {
-  if (c == !)) { return 1 }
-  if (c == !]) { return 2 }
-  if (c == !}) { return 3 }
-  if (c == !>) { return 4 }
+  if (c == !')') { return 1 }
+  if (c == !']') { return 2 }
+  if (c == !'}') { return 3 }
+  if (c == !'>') { return 4 }
   return -1
 }
 
@@ -62,11 +62,11 @@ Solve ::= (filename: []char) -> () {
       }
     }
   }
-  io.Print("Part 1: ", corrupted_score, !\n)
+  io.Print("Part 1: ", corrupted_score, !'\n')
 
   incomplete_scores'sort()
   mid := incomplete_scores.length as i64 / 2
-  io.Print("Part 2: ", incomplete_scores[mid], !\n)
+  io.Print("Part 2: ", incomplete_scores[mid], !'\n')
 }
 
 io.Print("Test:\n")

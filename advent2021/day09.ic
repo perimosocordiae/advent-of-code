@@ -41,7 +41,7 @@ Solve ::= (filename: []char) -> () {
       }
     }
   }
-  io.Print("Part 1: ", sum_risk, !\n)
+  io.Print("Part 1: ", sum_risk, !'\n')
 
   // Part 2
   label := 1
@@ -82,7 +82,7 @@ Solve ::= (filename: []char) -> () {
   }
   bincount'sort()
   result := bincount[label - 1] * bincount[label - 2] * bincount[label - 3]
-  io.Print("Part 2: ", result, !\n)
+  io.Print("Part 2: ", result, !'\n')
 }
 
 io.Print("Test:\n")
