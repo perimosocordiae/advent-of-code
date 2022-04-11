@@ -46,7 +46,7 @@ ref ::= (self: *intvec, idx: i64) -> *i64 {
 
 #{export}
 as_slice ::= (self: *intvec) -> []i64 {
-  return slice(&self._data[0], self.length)
+  return builtin.slice(&self._data[0], self.length)
 }
 
 #{export}

@@ -47,19 +47,19 @@ Solve ::= (filename: []char) -> () {
     file.Lines(f) each [line: []char] {
       if (line[0] == !'f') {
         // buffer[idx].direction = heading.HORIZONTAL
-        buffer[idx].amount = util.ParseInt64(slice(&line[8], line.length))
+        buffer[idx].amount = util.ParseInt64(builtin.slice(&line[8], line.length))
       } else {
         buffer[idx].direction = true // TODO: use heading.VERTICAL
         if (line[0] == !'u') {
-          buffer[idx].amount = -util.ParseInt64(slice(&line[3], line.length))
+          buffer[idx].amount = -util.ParseInt64(builtin.slice(&line[3], line.length))
         } else {
-          buffer[idx].amount = util.ParseInt64(slice(&line[5], line.length))
+          buffer[idx].amount = util.ParseInt64(builtin.slice(&line[5], line.length))
         }
       }
       idx += 1
     }
   }
-  values := slice(&buffer[0], idx)
+  values := builtin.slice(&buffer[0], idx)
   io.Print("Part 1: ", PartOne(values), !'\n')
   // io.Print("Part 2: ", PartTwo(values), !'\n')
   

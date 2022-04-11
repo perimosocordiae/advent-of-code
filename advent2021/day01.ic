@@ -37,7 +37,7 @@ Solve ::= (filename: []char) -> () {
       idx += 1
     }
   }
-  values := slice(&buffer[0], idx)
+  values := builtin.slice(&buffer[0], idx)
   io.Print("Part 1: ", CountIncreases(values), !'\n')
   io.Print("Part 2: ", CountWindowIncreases(values, 3), !'\n')
 }
