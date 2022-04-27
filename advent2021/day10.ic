@@ -31,10 +31,10 @@ ProcessLine ::= (line: []char) -> line_result {
   for (0, line.length as i64 - 1) do [i: i64] {
     idx := str.IndexOf("({[<", line[i])
     if (idx < 4) {
-      open_stack'append(")}]>"[idx] as i64)
+      open_stack'append(builtin.ascii_decode(")}]>"[idx]) as i64)
     } else {
       if (open_stack.length > 0 and
-          open_stack'back() == (line[i] as i64)) {
+          open_stack'back() == (builtin.ascii_decode(line[i]) as i64)) {
         open_stack'pop_back()
       } else {
         return line_result.{ corrupt = ErrorScore(line[i]) \\ incomplete = 0 }
@@ -45,7 +45,7 @@ ProcessLine ::= (line: []char) -> line_result {
   incomplete_score := 0
   vec.ReverseForEach(open_stack) do [ch: i64] {
     incomplete_score *= 5
-    incomplete_score += CompletionScore(ch as i8 as char)
+    incomplete_score += CompletionScore(builtin.ascii_encode(ch as u8))
   }
   return line_result.{ corrupt = 0 \\ incomplete = incomplete_score }
 }
