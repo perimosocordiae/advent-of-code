@@ -52,11 +52,11 @@ FindMinCostTwo ::= (crabs: *vec.intvec) -> i64 {
   return min_cost
 }
 
-Solve ::= (filename: []char) -> () {
+Solve ::= (filename: [/]char) -> () {
   crabs := vec.empty(10)
   file.With(filename) open [f: file.File] {
-    file.Lines(f) each [line: []char] {
-      str.Split(line, !',') do [num_str: []char] {
+    file.Lines(f) each [line: [/]char] {
+      str.Split(line, !',') do [num_str: [/]char] {
         crabs'append(util.ParseInt64(num_str))
       }
     }

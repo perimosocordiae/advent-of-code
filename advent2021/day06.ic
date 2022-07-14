@@ -5,11 +5,11 @@ file ::= import "file.ic"
 util ::= import "lib/util.ic"
 ring_buffer ::= import "lib/ring_buffer.ic"
 
-Solve ::= (filename: []char) -> () {
+Solve ::= (filename: [/]char) -> () {
   counts := ring_buffer.make(0, 9)
   file.With(filename) open [f: file.File] {
-    file.Lines(f) each [line: []char] {
-      str.Split(line, !',') do [num_str: []char] {
+    file.Lines(f) each [line: [/]char] {
+      str.Split(line, !',') do [num_str: [/]char] {
         num := util.ParseInt64(num_str)
         @(counts'ref(num)) += 1
       }

@@ -4,7 +4,7 @@ vec ::= import "lib/intvec.ic"
 file ::= import "file.ic"
 util ::= import "lib/util.ic"
 
-CountIncreases ::= (depths: []i64) -> i64 {
+CountIncreases ::= (depths: [/]i64) -> i64 {
   num_increases := 0
   prev := depths[0]
   for (1, depths.length as i64) do [i: i64] {
@@ -17,7 +17,7 @@ CountIncreases ::= (depths: []i64) -> i64 {
   return num_increases
 }
 
-CountWindowIncreases ::= (depths: []i64, window_size: u64) -> i64 {
+CountWindowIncreases ::= (depths: [/]i64, window_size: u64) -> i64 {
   length := depths.length - window_size + 1
   convolved := vec.make(0, length)
   for (0, length as i64) do [i: i64] {
@@ -28,11 +28,11 @@ CountWindowIncreases ::= (depths: []i64, window_size: u64) -> i64 {
   return CountIncreases(convolved'as_slice())
 }
 
-Solve ::= (filename: []char) -> () {
+Solve ::= (filename: [/]char) -> () {
   buffer: [2048; i64]
   idx: u64
   file.With(filename) open [f: file.File] {
-    file.Lines(f) each [line: []char] {
+    file.Lines(f) each [line: [/]char] {
       buffer[idx] = util.ParseInt64(line)
       idx += 1
     }

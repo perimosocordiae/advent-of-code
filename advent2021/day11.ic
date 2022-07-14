@@ -11,11 +11,11 @@ IncrementIfNonzero ::= (x: *i64) -> () {
   }
 }
 
-Solve ::= (filename: []char) -> bool {
+Solve ::= (filename: [/]char) -> bool {
   grid: [12, 12; i64]
   file.With(filename) open [f: file.File] {
     row := 1
-    file.Lines(f) each [line: []char] {
+    file.Lines(f) each [line: [/]char] {
       for (1, 11) do [col: i64] {
         grid[row][col] = util.ParseInt64(line[col - 1])
       }

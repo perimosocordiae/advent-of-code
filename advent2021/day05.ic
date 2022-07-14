@@ -7,14 +7,14 @@ util ::= import "lib/util.ic"
 MAX_LINES ::= 512
 MAX_COORD ::= 1000
 
-Solve ::= (filename: []char) -> () {
+Solve ::= (filename: [/]char) -> () {
   buffer: [MAX_LINES, 4; i64]
   idx := 0
   file.With(filename) open [f: file.File] {
-    file.Lines(f) each [line: []char] {
+    file.Lines(f) each [line: [/]char] {
       j := 0
-      str.Split (line, " -> ") do [s: []char] {
-        str.Split (s, !',') do [x: []char] {
+      str.Split (line, " -> ") do [s: [/]char] {
+        str.Split (s, !',') do [x: [/]char] {
           buffer[idx][j] = util.ParseInt64(x)
           j += 1
         }

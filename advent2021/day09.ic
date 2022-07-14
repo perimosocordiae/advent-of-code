@@ -9,12 +9,12 @@ MAX_HEIGHT ::= 102
 MAX_WIDTH ::= 102
 INFINITY ::= 9999999
 
-Solve ::= (filename: []char) -> () {
+Solve ::= (filename: [/]char) -> () {
   grid: [MAX_HEIGHT, MAX_WIDTH; i64]
   num_rows := 1
   num_cols := 1
   file.With(filename) open [f: file.File] {
-    file.Lines(f) each [line: []char] {
+    file.Lines(f) each [line: [/]char] {
       grid[num_rows][0] = INFINITY
       num_cols = 1
       for (0, line.length as i64 - 1) do [idx: i64] {

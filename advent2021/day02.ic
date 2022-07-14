@@ -10,7 +10,7 @@ command ::= struct {
   amount: i64
 }
 
-PartOne ::= (commands: []command) -> i64 {
+PartOne ::= (commands: [/]command) -> i64 {
   x_pos: i64 = 0
   y_pos: i64 = 0
   for (0, commands.length as i64) do [i: i64] {
@@ -24,7 +24,7 @@ PartOne ::= (commands: []command) -> i64 {
   return x_pos * y_pos
 }
 
-PartTwo ::= (commands: []command) -> i64 {
+PartTwo ::= (commands: [/]command) -> i64 {
   x_pos: i64 = 0
   y_pos: i64 = 0
   aim: i64 = 0
@@ -40,11 +40,11 @@ PartTwo ::= (commands: []command) -> i64 {
   return x_pos * y_pos
 }
 
-Solve ::= (filename: []char) -> () {
+Solve ::= (filename: [/]char) -> () {
   buffer: [1024; command]
   idx: u64
   file.With(filename) open [f: file.File] {
-    file.Lines(f) each [line: []char] {
+    file.Lines(f) each [line: [/]char] {
       if (line[0] == !'f') {
         // buffer[idx].direction = heading.HORIZONTAL
         buffer[idx].amount = util.ParseInt64(builtin.slice(&line[8], line.length))

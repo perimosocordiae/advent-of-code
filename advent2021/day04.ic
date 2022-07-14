@@ -38,7 +38,7 @@ SumUnmarked ::= (board: [5, 5; i64]) -> i64 {
 MAX_NUMS ::= 128
 MAX_BOARDS ::= 128
 
-Solve ::= (path: []char) -> () {
+Solve ::= (path: [/]char) -> () {
   nums: [MAX_NUMS; i64]
   boards: [MAX_BOARDS, 5, 5; i64]
   num_idx: i64 = 0
@@ -46,10 +46,10 @@ Solve ::= (path: []char) -> () {
   row: i64 = 0
 
   file.With(path) open [f: file.File] {
-    file.Lines(f) each [line: []char] {
+    file.Lines(f) each [line: [/]char] {
       if (num_idx == 0) {
         // Parse comma-separated integers into `nums`.
-        str.Split (line, !',') do [str_num: []char] {
+        str.Split (line, !',') do [str_num: [/]char] {
           nums[num_idx] = util.ParseInt64(str_num)
           num_idx += 1
         }

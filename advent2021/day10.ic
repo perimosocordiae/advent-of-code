@@ -26,7 +26,7 @@ line_result ::= struct {
   incomplete: i64
 }
 
-ProcessLine ::= (line: []char) -> line_result {
+ProcessLine ::= (line: [/]char) -> line_result {
   open_stack := vec.empty(10)
   for (0, line.length as i64 - 1) do [i: i64] {
     idx := str.IndexOf("({[<", line[i])
@@ -50,11 +50,11 @@ ProcessLine ::= (line: []char) -> line_result {
   return line_result.{ corrupt = 0 \\ incomplete = incomplete_score }
 }
 
-Solve ::= (filename: []char) -> () {
+Solve ::= (filename: [/]char) -> () {
   corrupted_score := 0
   incomplete_scores := vec.empty(5)
   file.With(filename) open [f: file.File] {
-    file.Lines(f) each [line: []char] {
+    file.Lines(f) each [line: [/]char] {
       result := ProcessLine(line)
       corrupted_score += result.corrupt
       if (result.incomplete > 0) {

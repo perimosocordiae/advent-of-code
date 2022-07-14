@@ -11,7 +11,7 @@ string ::= import "string.ic"
 MAX_NUM_NODES ::= 12
 
 CountUniquePaths ::= (
-    node_ids: [](string.string),
+    node_ids: [/](string.string),
     adj_matrix: *[MAX_NUM_NODES, MAX_NUM_NODES; bool]) -> i64 {
   num_nodes := node_ids.length as i64
   // Find the start and end node indices, and keep track of which nodes can
@@ -53,16 +53,16 @@ CountUniquePaths ::= (
 }
 
 
-Solve ::= (filename: []char) -> () {
+Solve ::= (filename: [/]char) -> () {
   buffer: [MAX_NUM_NODES; string.string]
   buf_len := 0
   adj_matrix: [MAX_NUM_NODES, MAX_NUM_NODES; bool]
   file.With(filename) open [f: file.File] {
-    file.Lines(f) each [line: []char] {
+    file.Lines(f) each [line: [/]char] {
       tmp := strip.StripSuffix(line, "\n")
       edge := [-1, -1]
       edge_idx := 0
-      str.Split(tmp, !'-') do [node: []char] {
+      str.Split(tmp, !'-') do [node: [/]char] {
         for (0, buf_len) do [idx: i64] {
           if (match.Equals(node, buffer[idx]'view())) {
             edge[edge_idx] = idx
@@ -82,7 +82,7 @@ Solve ::= (filename: []char) -> () {
       adj_matrix[edge[1]][edge[0]] = true
     }
   }
-  node_ids := slice(&buffer[0], buf_len as u64)
+  node_ids := builtin.slice(&buffer[0], buf_len as u64)
   io.Print("Part 1: ", CountUniquePaths(node_ids, &adj_matrix), !'\n')
 }
 

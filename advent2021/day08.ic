@@ -12,7 +12,7 @@ CharToIdx ::= (c: char) -> i64 {
   return (builtin.ascii_decode(c) - builtin.ascii_decode(!'a')) as i64
 }
 
-DecodeDigit ::= (wires: []char, histogram: *[8; i64]) -> i64 {
+DecodeDigit ::= (wires: [/]char, histogram: *[8; i64]) -> i64 {
   // Histogram:
   // a  b  c  d  e  f  g
   // 8  16 18 17 4  19 7
@@ -46,17 +46,17 @@ DecodeDigit ::= (wires: []char, histogram: *[8; i64]) -> i64 {
   return -1  // invalid
 }
 
-Solve ::= (filename: []char) -> () {
+Solve ::= (filename: [/]char) -> () {
   part_one := 0
   part_two := 0
   file.With(filename) open [f: file.File] {
-    file.Lines(f) each [line: []char] {
+    file.Lines(f) each [line: [/]char] {
       data := str2.StripSuffix(line, "\n")
       side := 0
       histogram: [8; i64]
       factor := 1000
-      str.Split(data, " | ") do [side_str: []char] {
-        str.Split(side_str, !' ') do [word: []char] {
+      str.Split(data, " | ") do [side_str: [/]char] {
+        str.Split(side_str, !' ') do [word: [/]char] {
           if (side == 0) {
             for (0, word.length as i64) do [i: i64] {
               idx := CharToIdx(word[i])

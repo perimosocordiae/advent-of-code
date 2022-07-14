@@ -5,13 +5,13 @@ file ::= import "file.ic"
 MAX_ROWS ::= 1024
 MAX_COLS ::= 16
 
-Solve ::= (path: []char) -> () {
+Solve ::= (path: [/]char) -> () {
   buffer: [MAX_ROWS, MAX_COLS; bool]
   num_rows: i64
   num_cols: i64
 
   file.With(path) open [f: file.File] {
-    file.Lines(f) each [line: []char] {
+    file.Lines(f) each [line: [/]char] {
       num_rows += 1
       num_cols = line.length as i64 - 1
       for (0, num_cols) do [i: i64] {

@@ -2,7 +2,7 @@
 cstd ::= import "c/stdlib.ic"
 
 #{export}
-ParseInt64 ::= (s: []char) -> i64 {
+ParseInt64 ::= (s: [/]char) -> i64 {
   return cstd.atol(s.data)
 }
 #{export}
