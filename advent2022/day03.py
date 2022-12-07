@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
+from typing import Iterable
 import itertools
 
 
-def common_priority(parts: list[str]) -> int:
+def common_priority(parts: Iterable[str]) -> int:
     (ch,) = set.intersection(*[set(p.strip()) for p in parts])
     return priority(ch)
 
@@ -18,7 +19,7 @@ def priority(ch: str) -> int:
     return ord(ch) - ord("a") + 1
 
 
-def batched(iterable, n: int):
+def batched(iterable: Iterable[str], n: int) -> Iterable[list[str]]:
     "Batch data into lists of length n. The last batch may be shorter."
     # batched('ABCDEFG', 3) --> ABC DEF G
     it = iter(iterable)

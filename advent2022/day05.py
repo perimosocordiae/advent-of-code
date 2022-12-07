@@ -3,7 +3,7 @@
 
 def parse_input(path: str) -> tuple[list[list[str]], list[tuple[int, int, int]]]:
     drawing = []
-    key = None
+    key = ""
     moves = []
     with open(path) as f:
         for line in f:
