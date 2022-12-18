@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import numpy as np
 from itertools import cycle
+import matplotlib.pyplot as plt
+import IPython
 
 HORIZ = np.array([[1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], dtype=int)
 PLUS = np.array([[0, 1, 0, 0], [1, 1, 1, 0], [0, 1, 0, 0], [0, 0, 0, 0]], dtype=int)
@@ -14,7 +16,8 @@ def solve(path: str) -> None:
     pattern = iter(cycle([-1 if ch == "<" else +1 for ch in open(path).read().strip()]))
     top = 0
     grid = np.ones((1, 11), dtype=int)
-    for i in range(2022):
+    trace = [top]
+    for _ in range(5000):
         rock = next(ROCKS)
         r, c = top + 4, 3
         if grid.shape[0] < top + 10:
@@ -32,12 +35,26 @@ def solve(path: str) -> None:
                 break
             r -= 1
             c = nc
-        # Debug: print the grid in reverse row order.
-        # print("After rock", i + 1, "top =", top)
-        # for row in reversed(grid):
-        #     print("".join("#" if cell else "." for cell in row))
-        # print()
-    print("Part 1:", top)
+        trace.append(top)
+    print("Part 1:", trace[2022])
+
+    # Look for a repeating pattern in the delta.
+    delta = np.diff(trace)
+    # Step by 5 because we have 5 rocks in the cycle.
+    for period in range(5, len(delta) // 2, 5):
+        if (delta[-period:] == delta[-2 * period : -period]).all():
+            break
+    else:
+        raise ValueError("No repeating pattern found")
+    repeat_sum = delta[-period:].sum()
+
+    def height(n):
+        offset = len(trace) - period
+        num_repeats = (n - offset) // period
+        num_extra = (n - offset) % period
+        return trace[offset + num_extra] + num_repeats * repeat_sum
+
+    print("Part 2:", height(1000000000000))
 
 
 if __name__ == "__main__":
