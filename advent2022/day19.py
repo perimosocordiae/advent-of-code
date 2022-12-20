@@ -1,80 +1,106 @@
 #!/usr/bin/env python3
-import dataclasses
+import numpy as np
 
 
-@dataclasses.dataclass
 class Materials:
-    ore: int
-    clay: int
-    obsidian: int
-    geode: int
+    def __init__(self, ore=0, clay=0, obsidian=0, geode=0) -> None:
+        self.x = np.array([ore, clay, obsidian, geode], dtype=int)
+
+    @property
+    def geode(self) -> int:
+        return self.x[3]
 
     def all_satisfied(self, other: "Materials") -> bool:
-        return (
-            self.ore >= other.ore
-            and self.clay >= other.clay
-            and self.obsidian >= other.obsidian
-            and self.geode >= other.geode
-        )
+        return bool((self.x >= other.x).all())
 
-    def __isub__(self, other: "Materials") -> "Materials":
-        self.ore -= other.ore
-        self.clay -= other.clay
-        self.obsidian -= other.obsidian
-        self.geode -= other.geode
-        return self
+    def sort_key(self) -> int:
+        return np.inner(self.x, [1, 100, 10000, 1000000])
+
+    def __add__(self, other: "Materials") -> "Materials":
+        return Materials(*self.x + other.x)
+
+    def __sub__(self, other: "Materials") -> "Materials":
+        return Materials(*self.x - other.x)
+
+    def __repr__(self) -> str:
+        return repr(self.x)
 
     def __str__(self) -> str:
+        ore, clay, obsidian, geode = self.x
         res = []
-        if self.ore > 0:
-            res.append(f"{self.ore} ore")
-        if self.clay > 0:
-            res.append(f"{self.clay} clay")
-        if self.obsidian > 0:
-            res.append(f"{self.obsidian} obsidian")
-        if self.geode > 0:
-            res.append(f"{self.geode} geode")
+        if ore > 0:
+            res.append(f"{ore} ore")
+        if clay > 0:
+            res.append(f"{clay} clay")
+        if obsidian > 0:
+            res.append(f"{obsidian} obsidian")
+        if geode > 0:
+            res.append(f"{geode} geode")
         return ", ".join(res)
+
+    def __hash__(self) -> int:
+        return hash(tuple(self.x))
+
+
+def max_geodes_old(blueprint: dict[str, Materials]) -> int:
+    """Finds the max number of geodes that can be produced in 24 minutes."""
+    best_geodes = 0
+    queue = [
+        (24, Materials(ore=1), Materials())
+    ]  # type: list[tuple[int, Materials, Materials]]
+    while queue:
+        time, robots, inventory = queue.pop()
+        if time == 0:
+            if inventory.geode > best_geodes:
+                best_geodes = inventory.geode
+                print("New best:", best_geodes)
+            continue
+        for kind in ["ore", "clay", "obsidian", "geode"]:
+            cost = blueprint[kind]
+            if inventory.all_satisfied(cost):
+                new_inventory = inventory - cost + robots
+                new_robots = robots + Materials(**{kind: 1})
+                queue.append((time - 1, new_robots, new_inventory))
+        inventory += robots
+        queue.append((time - 1, robots, inventory))
+        queue.sort(key=lambda x: x[1].sort_key())
+    return best_geodes
+
+
+def max_geodes(blueprint: dict[str, Materials]) -> int:
+    """Finds the max number of geodes that can be produced in 24 minutes."""
+
+    def rec(time: int, robots: Materials, inventory: Materials) -> int:
+        if time == 1:
+            return inventory.geode + robots.geode
+        best = rec(time - 1, robots, inventory + robots)
+        for kind in ["ore", "clay", "obsidian", "geode"]:
+            cost = blueprint[kind]
+            if inventory.all_satisfied(cost):
+                new_inventory = inventory - cost + robots
+                new_robots = robots + Materials(**{kind: 1})
+                best = max(best, rec(time - 1, new_robots, new_inventory))
+        return best
+
+    return rec(24, Materials(ore=1), Materials())
 
 
 def solve(path: str) -> None:
+    sum_geodes = 0
     for line in open(path):
         parts = line.split()
         if len(parts) < 31:
             continue
-        blueprint = int(parts[1].rstrip(":"))
-        robot_costs = {
-            "ore": Materials(int(parts[6]), 0, 0, 0),
-            "clay": Materials(int(parts[12]), 0, 0, 0),
-            "obsidian": Materials(int(parts[18]), int(parts[21]), 0, 0),
-            "geode": Materials(int(parts[27]), 0, int(parts[30]), 0),
+        num = int(parts[1].rstrip(":"))
+        blueprint = {
+            "ore": Materials(ore=int(parts[6])),
+            "clay": Materials(ore=int(parts[12])),
+            "obsidian": Materials(ore=int(parts[18]), clay=int(parts[21])),
+            "geode": Materials(ore=int(parts[27]), obsidian=int(parts[30])),
         }
-        print(blueprint, robot_costs)
-
-        # TODO: Decompose this into a graph, then search for the best path.
-        total_time = 24
-        robots = Materials(1, 0, 0, 0)
-        materials = Materials(0, 0, 0, 0)
-        for t in range(total_time):
-            materials.ore += robots.ore
-            materials.clay += robots.clay
-            materials.obsidian += robots.obsidian
-            materials.geode += robots.geode
-            if materials.all_satisfied(robot_costs["geode"]):
-                materials -= robot_costs["geode"]
-                robots.geode += 1
-            if materials.all_satisfied(robot_costs["obsidian"]):
-                materials -= robot_costs["obsidian"]
-                robots.obsidian += 1
-            if materials.all_satisfied(robot_costs["clay"]):
-                materials -= robot_costs["clay"]
-                robots.clay += 1
-            if materials.all_satisfied(robot_costs["ore"]):
-                materials -= robot_costs["ore"]
-                robots.ore += 1
-            print("Time", t + 1)
-            print("\tRobots", robots)
-            print("\tMaterials", materials)
+        print(num, blueprint)
+        sum_geodes += max_geodes(blueprint)
+    print("Part 1:", sum_geodes)
 
 
 if __name__ == "__main__":
