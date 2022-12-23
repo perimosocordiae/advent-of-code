@@ -25,8 +25,8 @@ def parse_input(path: str):
 
 def solve(path: str) -> None:
     board, traj = parse_input(path)
-    r = 1
-    c = np.where(board[r] == OPEN)[0][0]
+    r = 1  # type: int
+    c = np.where(board[r] == OPEN)[0][0]  # type: int
     facing = FACINGS[0]  # right
     for step in traj:
         if step == "L":
@@ -57,6 +57,13 @@ def solve(path: str) -> None:
                     c = c2
     part1 = 1000 * r + 4 * c + FACINGS.index(facing)
     print("Part 1:", part1)
+
+    # Part 2 diagram:
+    # _ 1 2
+    # _ 3 _
+    # 4 5 _
+    # 6 _ _
+    # This forms a cube with 6 faces, each face is a 50x50 square.
 
 
 if __name__ == "__main__":
