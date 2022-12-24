@@ -53,28 +53,41 @@ def parse_input(
 def solve(path: str) -> None:
     initial_grid, start, stop = parse_input(path)
     all_grids = [initial_grid]
+    did_part1 = False
     seen = set()
-    queue = deque([(start, 0)])  # type: deque[tuple[tuple[int, int], int]]
+    queue = deque([(start, 0, 0)])  # type: deque[tuple[tuple[int, int], int, int]]
     while queue:
-        pos, steps = queue.popleft()
-        if pos == stop:
-            print("Part 1:", steps)
-            break
-        if (pos, steps) in seen:
+        item = queue.popleft()
+        if item in seen:
             continue
-        seen.add((pos, steps))
+        seen.add(item)
+        pos, steps, trip = item
+        if pos == stop:
+            if not did_part1:
+                print("Part 1:", steps)
+                did_part1 = True
+            if trip == 0:
+                trip += 1
+            elif trip == 2:
+                print("Part 2:", steps)
+                return
+        elif trip == 1 and pos == start:
+            trip += 1
         grid = all_grids[steps]
         next_steps = steps + 1
         if next_steps == len(all_grids):
             all_grids.append(make_next_grid(grid))
         next_grid = all_grids[next_steps]
         if next_grid[pos] == OPEN:
-            queue.append((pos, next_steps))
+            queue.append((pos, next_steps, trip))
         for dr, dc in DIR_MAP.values():
             next_pos = (pos[0] + dr, pos[1] + dc)
+            if next_pos[0] < 0 or next_pos[0] >= len(grid):
+                continue
+            if next_pos[1] < 0 or next_pos[1] >= len(grid[0]):
+                continue
             if next_grid[next_pos] == OPEN:
-                queue.append((next_pos, next_steps))
-        # print(len(queue), len(all_grids))
+                queue.append((next_pos, next_steps, trip))
 
 
 if __name__ == "__main__":
