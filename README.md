@@ -1,11 +1,21 @@
 # advent-of-code
 
+## 2023
+
+Implemented in various different languages in directory `advent2023/`.
+To run a given day's solution, check the header comment in the source file.
+
+## 2022
+
+Implemented in Python in directory `advent2022/`.
+
 ## 2021
 
-Implemented in Icarus in directory `advent2021/`.
+Implemented in Icarus (and later, Python) in directory `advent2021/`.
 
-Most days' solutions should work with the current head version of
-https://github.com/asoffer/Icarus with the following known exceptions:
+Most days' solutions will no longer work with the current head version of
+https://github.com/asoffer/Icarus unfortunately.
+With the latest working version, there were also the following known exceptions:
 
  - day02.ic has a non-deterministic type verification failure. If you try running it
    enough times, it should eventually work.
