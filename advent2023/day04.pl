@@ -1,3 +1,4 @@
+#!/usr/bin/env raku
 use v6;
 
 my $part1 = 0;
@@ -26,5 +27,5 @@ for "inputs/04.full".IO.lines {
     }
 }
 
-say "Part 1: ", $part1;\
+say "Part 1: ", $part1;
 say "Part 2: ", [+] @card_copies;
