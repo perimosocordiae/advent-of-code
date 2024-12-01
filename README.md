@@ -1,5 +1,9 @@
 # advent-of-code
 
+## 2024
+
+Implemented in various different languages in directory `advent2024/`.
+
 ## 2023
 
 Implemented in various different languages in directory `advent2023/`.
