@@ -33,4 +33,5 @@ awkprog='
 }
 '
 
+echo "Part 1:"
 tr ' ' '\n' < "$infile" | repiper 25 awk "$awkprog" | wc -l
