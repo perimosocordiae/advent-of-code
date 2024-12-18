@@ -5,27 +5,25 @@ def main(infile="inputs/17.full") -> None:
     reg, prog = _parse_input(infile)
     output = _run_program(list(reg), prog)
     print("Part 1:", ",".join(map(str, output)))
-
-    # Part 2
-    for a in range(35184496000000, 281474976710656):
-        if a % 1000000 == 0:
-            print(a)
-        for idx, val in enumerate(_fast_program(a)):
-            if val != prog[idx]:
-                break
-        else:
-            if idx == len(prog) - 1:
-                print("Part 2:", a)
-                break
+    print("Part 2:", _match_program(prog))
 
 
-def _fast_program(a: int):
-    while a:
-        # Take last 3 bits of a, xor with 0b101
-        b = (a % 8) ^ 0b101
-        yield ((b ^ 0b110) ^ (a >> b)) % 8
-        # Remove last 3 bits of a
-        a //= 8
+def _match_program(prog: list[int], start=0) -> int:
+    if not prog:
+        return start
+    target = prog[-1]
+    base = start << 3
+    for a in _valid_a(base, target):
+        answer = _match_program(prog[:-1], base + a)
+        if answer != -1:
+            return answer
+    return -1
+
+
+def _valid_a(base: int, target: int):
+    for a in range(8):
+        if (a ^ 0b011) ^ ((a + base) >> (a ^ 0b101)) % 8 == target:
+            yield a
 
 
 def _run_program(reg: list[int], prog: list[int]):
