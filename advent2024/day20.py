@@ -1,5 +1,6 @@
-import numpy as np
 import collections
+import numpy as np
+import scipy.spatial.distance as ssd
 
 
 def main(infile="inputs/20.full"):
@@ -22,6 +23,22 @@ def main(infile="inputs/20.full"):
     part1 = np.count_nonzero(_search(grid, costs) >= 100)
     part1 += np.count_nonzero(_search(grid.T, costs.T) >= 100)
     print("Part 1:", part1)
+
+    part2 = _search_n(grid, costs)
+    print("Part 2:", part2)
+
+
+def _search_n(grid, costs, n=20, min_saved=100) -> int:
+    # Consider all tiles reachable in n steps (manhattan distance)
+    pts = np.column_stack(np.where(grid))
+    l1dist = ssd.pdist(pts, "cityblock")
+    l1dist[l1dist > n] = 0
+    ii, jj = np.triu_indices(len(pts), k=1)
+    mask = l1dist > 0
+    starts = pts[ii[mask]]
+    ends = pts[jj[mask]]
+    saved = abs(costs[*starts.T] - costs[*ends.T]) - l1dist[mask]
+    return np.count_nonzero(saved >= min_saved)
 
 
 def _search(grid, costs):
